@@ -26,7 +26,19 @@ const keywords = [
     'typeof',
     'lenghtof',
     'using',
-    'namespace'
+    'namespace',
+    'null',
+    'true',
+    'false',
+    'var',
+    'byt',
+    'chr',
+    'str',
+    'int',
+    'flt',
+    'dbl',
+    'bol',
+    'typ'
 ];
 
 const Token = {
