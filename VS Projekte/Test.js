@@ -1,9 +1,12 @@
 // Token types
-const operator = 'operator';
-const keyword = 'keyword';
-const identifier = 'identifier';
-const textelement = 'textelement';
-const comment = 'comment';
+const operator = 'operator';       // pale green
+const keyword = 'keyword';         // dark pink
+const vartype = 'type';            // dark blue
+const identifier = 'identifier';   // light blue
+const textelement = 'textelement'; // white
+const text = 'text';               // dark orange
+const number = 'number';           // pale yellow
+const comment = 'comment';         // dark green
 
 // Predefined token values
 // Keywords
@@ -48,6 +51,20 @@ const keywords = [
     'typ'
 ];
 
+// Variable types
+const types = [
+    'var',
+    'byt',
+    'chr',
+    'str',
+    'int',
+    'flt',
+    'dbl',
+    'bol',
+    'typ',
+    'void'
+];
+
 // Operations
 const PLUS = '+';
 const MINUS = '-';
@@ -68,6 +85,17 @@ const AND = '&';
 const BYTESTART = '$';
 const COLON = ':';
 
+// Code structure
+const leftCB = '{';
+const rightCB = '}';
+const leftSB = '[';
+const rightSB = ']';
+const leftB = '(';
+const rightB = ')';
+const endcolumn = ';';
+const comma = ',';
+const hashtag = '#';
+
 const NL = '\n';
 const TAB = '\t';
 const EOF = 'endoffile';
@@ -84,20 +112,57 @@ function genTok(row, value, type) {
     };
 }
 
+function highlight_code(tokens) {
+    var output = '<p>';
+    tokens.forEach(token => {
+        if (token.vlaue === NL)
+            output += '<br>';
+        else
+            output += '<span style="color: ';
+
+        switch (token.type) {
+            case operator:
+                output += '#bffaa0">'
+                break;
+            case keyword:
+                output += '#faa0ec">'
+                break;
+            case vartype:
+                output += '#91abff">'
+                break;
+            case identifier:
+                output += '#bffaa0">'
+                break;
+            case textelement:
+                if (token.value == NL)
+                    output += ''
+                break;
+            case text:
+                break;
+            case number:
+                break;
+            case comment:
+                break;
+        } 
+        output += '</span>'; 
+    });
+    output += '</p>';
+}
+
 function lexing(code) {
     console.log(code);
 
     // Generating tokenlist
     var row = -1;
     var idx = -1;
-    var ln = 0;
     var tokens = [];
 
-    // Functions
+    // Data of the current token
     var char = 'none';
     var type = 'none';
     var value = 'none';
-
+    
+    // Functions
     const advance = () => {
         row++;
         idx++;
@@ -113,14 +178,18 @@ function lexing(code) {
         idx -= count;
         char = code[idx];
         return char;
-    } 
-    const genKeywordORIdentifier = () => {
+    }
+    // Bugs
+    const genIdentifier = () => {
         var str = '';
 
-        while ((letgits + '_').includes(char) && char !== EOF)
+        while ((letgits + '_').includes(char) && char !== EOF) {
             str.join(char);
+            advance();
+        }
 
         type = keywords.includes(str) ? keyword : identifier;
+        type = types.includes(str) ? vartype : type;
         value = str;
     }
     const genCommentOrDivide = () => {
@@ -141,9 +210,6 @@ function lexing(code) {
                 advance();
                 str += char;
             }
-
-            advance();
-            str += char;
         }
         else if (char === MULTIPLY) {
             type = comment;
@@ -161,18 +227,41 @@ function lexing(code) {
                 advance();
                 str += char;
             }
-
-            advance();
-            str += char;
         }
 
         value = str;
+    }
+    const genString = () => {
+        var str = '';
+
+        advance();
+        while (char !== QUOTE) {
+            str += char;
+            advance();
+        }
+        advance();
+        str += char;
+
+        type = text;
+        value = str;
+    }
+    const genChar = () => {
+        str = char;
+        advance();
+
+        if ((letgits + "'").includes(char))
+            advance();
+        advance();
+        
+        type = text;
+        str = char;
     }
 
     // Loop through all the characters
     while (true) {
         advance();
         if (char === EOF) break;
+        console.log(char);
 
         switch (char) {
             case PLUS:
@@ -185,27 +274,45 @@ function lexing(code) {
             case NOT:
             case LESS:
             case GREATER:
-            case QUOTE:
-            case SQUOTE:
             case DOT:
             case AND:
             case OR:
             case BYTESTART:
             case COLON:
-                type = operator
+                type = operator;
                 value = char;
                 break;
             case NL:
-                ln++;
                 row = 0;
                 value = NL;
                 type = textelement;
                 break; 
             case letters.includes(char):
-                genKeywordORIdentifier();
+                type = identifier;
+                value = char;
                 break;
             case DIVIDE:
                 genCommentOrDivide();
+                break;
+            case leftCB:
+            case rightCB:
+            case leftSB: 
+            case rightSB:
+            case leftB:
+            case rightB: 
+            case endcolumn:
+            case hashtag:
+            case comma:
+                type = textelement;
+                value = char;
+                break;
+            case QUOTE:
+                type = identifier;
+                value = char;
+                break;
+            case SQUOTE:
+                type = identifier;
+                value = char;
                 break;
             default:
                 value = char;
@@ -214,10 +321,8 @@ function lexing(code) {
         }
         tokens.push(genTok(row, value, type));
     }
-}
 
-function highlight_code(json) {
-
+    highlight_code(tokens);
 }
 
 function getCode() {
