@@ -14,9 +14,33 @@
     </head>
     <header>
         <h1>Code Editor</h1>
+        <input type="button" value="Lexing" onclick="lexing(getCode())"/>
     </header>
-    <body>
-        <textarea name="editor" id="editor" cols="20" rows="25"></textarea>
-        <p>ölkasfö <span style="color: red;">lkjasölfkj</span> laskdfölaksjf ölksjdfölkjasdf ölkj<p>
+    <body onload="lexing(getCode())">
+        <textarea name="editor" id="editor" cols="20" rows="25">
+#lib = "Test_lib"
+#import <stdlib>
+
+#define GLOBAL_STR "SimpleC test!"
+
+namespace m_nameSpace
+{
+    public static class TestClass 
+    {
+        private int A;
+        private int B;
+        constructor(int a, int b) {
+            A = a;
+            B = b;
+        }
+
+        public protected function void myFunc() 
+        {
+            console.print(GLOBAL_STR);
+        }
+    }
+}
+        </textarea>
+        <!--p>ölkasfö <span style="color: red;">lkjasölfkj</span> laskdfölaksjf ölksjdfölkjasdf ölkj<p-->
     </body>
 </html>
