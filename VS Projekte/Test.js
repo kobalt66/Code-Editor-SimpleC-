@@ -7,6 +7,8 @@ const textelement = 'textelement'; // white
 const text = 'text';               // dark orange
 const number = 'number';           // pale yellow
 const comment = 'comment';         // dark green
+const newline = 'newline';
+const whitespace = 'whitespace';
 
 // Predefined token values
 // Keywords
@@ -85,6 +87,27 @@ const AND = '&';
 const BYTESTART = '$';
 const COLON = ':';
 
+const ops = [
+    PLUS,
+    MINUS,
+    DIVIDE,
+    MULTIPLY,
+    MODULUS,
+    POWER,
+    ISEQUALTO,
+    EQUALS,
+    NOT,
+    LESS,
+    GREATER,
+    QUOTE,
+    SQUOTE,
+    DOT,
+    OR,
+    AND,
+    BYTESTART,
+    COLON
+];
+
 // Code structure
 const leftCB = '{';
 const rightCB = '}';
@@ -96,6 +119,18 @@ const endcolumn = ';';
 const comma = ',';
 const hashtag = '#';
 
+const codeStructure = [
+    leftCB,
+    rightCB,
+    leftSB,
+    rightSB,
+    leftB,
+    rightB,
+    endcolumn,
+    comma,
+    hashtag
+];
+
 const NL = '\n';
 const TAB = '\t';
 const EOF = 'endoffile';
@@ -106,15 +141,16 @@ const letgits = letters + digits;
 
 function genTok(row, value, type) {
     return {
-        rowPos : row,
-        value : value,
-        type : type
+        rowPos: row,
+        value: value,
+        type: type
     };
 }
 
 function highlight_code(tokens) {
     var output = '<p>';
     tokens.forEach(token => {
+        console.log(token);
         if (token.vlaue === NL)
             output += '<br>';
         else
@@ -143,13 +179,14 @@ function highlight_code(tokens) {
                 break;
             case comment:
                 break;
-        } 
-        output += '</span>'; 
+        }
+        output += '</span>';
     });
     output += '</p>';
 }
 
 function lexing(code) {
+    console.clear();
     console.log(code);
 
     // Generating tokenlist
@@ -158,18 +195,23 @@ function lexing(code) {
     var tokens = [];
 
     // Data of the current token
-    var char = 'none';
-    var type = 'none';
-    var value = 'none';
-    
+    var char = undefined;
+    var type = undefined;
+    var value = undefined;
+
     // Functions
-    const advance = () => {
-        row++;
-        idx++;
-        char = idx + 1 <= code.length ? code[idx++] : EOF;
+    const advance = (advFrom) => {
+        if (idx + 1 < code.length) {
+            idx++;
+            row++;
+            char = code[idx];
+        }
+        else
+            char = EOF;
+        console.log(char + " : Advace from '" + advFrom + "'");
         return char;
     }
-    const reverse = (count=1) => {
+    const reverse = (count = 1) => {
         if (idx - count <= 0) {
             row = 0;
             idx = 0;
@@ -179,13 +221,14 @@ function lexing(code) {
         char = code[idx];
         return char;
     }
-    // Bugs
+
     const genIdentifier = () => {
         var str = '';
 
-        while ((letgits + '_').includes(char) && char !== EOF) {
-            str.join(char);
-            advance();
+        //console.log(`Check if ${char} is inside ${letters} : ${(letters + '_').includes(char)}`);
+        while ((letgits + '_').includes(char)) {
+            str += char;
+            advance('genIdentifier');
         }
 
         type = keywords.includes(str) ? keyword : identifier;
@@ -203,17 +246,17 @@ function lexing(code) {
 
             advance();
             str += char;
-            
+
             while (currChar !== NL) {
                 if (currChar === EOF)
-                   break;
+                    break;
                 advance();
                 str += char;
             }
         }
         else if (char === MULTIPLY) {
             type = comment;
-            
+
             advance();
             str += char;
 
@@ -231,37 +274,11 @@ function lexing(code) {
 
         value = str;
     }
-    const genString = () => {
-        var str = '';
-
-        advance();
-        while (char !== QUOTE) {
-            str += char;
-            advance();
-        }
-        advance();
-        str += char;
-
-        type = text;
-        value = str;
-    }
-    const genChar = () => {
-        str = char;
-        advance();
-
-        if ((letgits + "'").includes(char))
-            advance();
-        advance();
-        
-        type = text;
-        str = char;
-    }
 
     // Loop through all the characters
     while (true) {
-        advance();
+        console.warn(char);
         if (char === EOF) break;
-        console.log(char);
 
         switch (char) {
             case PLUS:
@@ -281,43 +298,45 @@ function lexing(code) {
             case COLON:
                 type = operator;
                 value = char;
+                advance('std while (l.301)');
                 break;
             case NL:
                 row = 0;
                 value = NL;
-                type = textelement;
-                break; 
-            case letters.includes(char):
-                type = identifier;
-                value = char;
+                type = newline;
+                advance('std while (l.307)');
                 break;
             case DIVIDE:
                 genCommentOrDivide();
                 break;
             case leftCB:
             case rightCB:
-            case leftSB: 
+            case leftSB:
             case rightSB:
             case leftB:
-            case rightB: 
+            case rightB:
             case endcolumn:
             case hashtag:
             case comma:
                 type = textelement;
                 value = char;
+                advance('std while (l.324)');
                 break;
             case QUOTE:
-                type = identifier;
-                value = char;
-                break;
             case SQUOTE:
-                type = identifier;
+                type = text;
                 value = char;
+                advance('std while (l.330)');
+                break;
+            case ' ':
+            case undefined:
+                type = whitespace;
+                value = '';
+                advance('std while');
                 break;
             default:
-                value = char;
-                type = textelement;
-                break; 
+                genIdentifier();
+                break;
         }
         tokens.push(genTok(row, value, type));
     }
