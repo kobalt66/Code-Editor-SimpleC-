@@ -193,7 +193,17 @@ function highlight_code(tokens) {
         output += '</span>';
     });
     output += '</p>';
-    console.log(output);
+
+    var code = document.getElementById("code").contentWindow.document;
+    document.body.onkeyup = function() {
+        code.open();
+        code.writeln(
+            "<style>" +
+            output + 
+            "</script>"
+        );
+        code.close();
+    };
 }
 
 function lexing(code) {
