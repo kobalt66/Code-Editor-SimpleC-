@@ -170,14 +170,17 @@ function highlight_code(tokens) {
                 output += '#bffaa0">'
                 break;
             case textelement:
-                if (token.value == NL)
-                    output += ''
+                output += '#dbdbdb>'
                 break;
             case text:
+                output += '#c97026>'
                 break;
             case number:
+                output += '#ffde85>'
                 break;
             case comment:
+                token.value.
+                output += '#507a43>'
                 break;
         }
         output += '</span>';
@@ -233,6 +236,7 @@ function lexing(code) {
 
         type = keywords.includes(str) ? keyword : identifier;
         type = types.includes(str) ? vartype : type;
+        type = Number.isInteger(Number.parseInt(str)) ? number : type;
         value = str;
     }
     const genCommentOrDivide = () => {
