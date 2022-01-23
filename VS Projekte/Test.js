@@ -151,41 +151,49 @@ function highlight_code(tokens) {
     var output = '<p>';
     tokens.forEach(token => {
         console.log(token);
-        if (token.vlaue === NL)
-            output += '<br>';
+        if ([newline, whitespace].includes(token.type))
+            output += '<span>';
         else
             output += '<span style="color: ';
 
         switch (token.type) {
             case operator:
-                output += '#bffaa0">'
+                output += '#bffaa0">';
                 break;
             case keyword:
-                output += '#faa0ec">'
+                output += '#faa0ec">';
                 break;
             case vartype:
-                output += '#91abff">'
+                output += '#91abff">';
                 break;
             case identifier:
-                output += '#bffaa0">'
+                output += '#72ceed">';
                 break;
             case textelement:
-                output += '#dbdbdb>'
+                output += '#dbdbdb">';
                 break;
             case text:
-                output += '#c97026>'
+                output += '#c97026">';
                 break;
             case number:
-                output += '#ffde85>'
+                output += '#ffde85">';
                 break;
             case comment:
-                token.value.
-                output += '#507a43>'
+                token.value = token.value.replace(/\n/i, '<br>');
+                output += '#507a43">';
+                break;
+            case whitespace:
+                output += ' ';
+                break;
+            case newline:
+                output += '<br>';
                 break;
         }
+        output += token.value;
         output += '</span>';
     });
     output += '</p>';
+    console.log(output);
 }
 
 function lexing(code) {
