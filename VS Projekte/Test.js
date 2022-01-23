@@ -208,7 +208,7 @@ function lexing(code) {
         }
         else
             char = EOF;
-        console.log(char + " : Advace from '" + advFrom + "'");
+        //console.log(char + " : Advace from '" + advFrom + "'");
         return char;
     }
     const reverse = (count = 1) => {
@@ -238,17 +238,19 @@ function lexing(code) {
     const genCommentOrDivide = () => {
         var str = char;
         advance();
-        if (char !== DIVIDE) {
-            reverse();
+        if (char !== DIVIDE && char !== MULTIPLY) {
+            value = str;
+            return;
         }
         else if (char === DIVIDE) {
             type = comment;
-
+            
+            str += char;
             advance();
             str += char;
-
-            while (currChar !== NL) {
-                if (currChar === EOF)
+            
+            while (char !== NL) {
+                if (char === EOF)
                     break;
                 advance();
                 str += char;
@@ -256,19 +258,25 @@ function lexing(code) {
         }
         else if (char === MULTIPLY) {
             type = comment;
-
+            
+            str += char;
             advance();
             str += char;
 
-            while (currChar != EOF) {
-                if (currChar === MULTIPLY) {
+            while (char != EOF) {
+                if (char === MULTIPLY) {
                     advance();
-                    str += char;
-                    if (currChar === DIVIDE)
+                    if (char !== EOF)
+                        str += char;
+                    
+                        if (char === DIVIDE) {
+                        advance();
                         break;
+                    }
                 }
                 advance();
-                str += char;
+                if (char !== EOF)
+                    str += char;
             }
         }
 
@@ -277,7 +285,7 @@ function lexing(code) {
 
     // Loop through all the characters
     while (true) {
-        console.warn(char);
+        //console.warn(char);
         if (char === EOF) break;
 
         switch (char) {
