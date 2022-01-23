@@ -38,3 +38,7 @@ p {
     font-size: 20px;
     color: rgb(219, 219, 219);
 }
+
+div {
+    text-align: left;
+}
