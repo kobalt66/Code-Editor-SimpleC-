@@ -31,12 +31,13 @@ const keywords = [
     'void',
     'override',
     'operation',
+    'constructor',
     'return',
     'continue',
     'break',
     'sizeof',
     'typeof',
-    'lenghtof',
+    'lengthof',
     'using',
     'namespace',
     'null',
@@ -217,9 +218,9 @@ function getCharFromKeycode(code) {
             return 'w';
         case 'KeyX':
             return 'x';
-        case 'KeyY':
-            return 'y';
         case 'KeyZ':
+            return 'y';
+        case 'KeyY':
             return 'z';
         case 'Digit1':
             return '1';
