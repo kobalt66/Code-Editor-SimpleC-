@@ -14,19 +14,19 @@
     </head>
     <header>
         <h1>Code Editor</h1>
-        <input type="button" value="Lexing" onclick="lexing(getCode())"/>
+        <input type="button" value="Lexing" onclick="init()"/>
     </header>
-    <body onload="lexing(getCode())">
+    <body onload="init()">
         <textarea name="editor" id="editor" cols="5" rows="5">#lib = "Test_lib"</textarea>
-        <iframe id="code"></iframe>
+        <div output="output" id="output">
+            <p><span> </span><span style="color: #dbdbdb">#</span><span style="color: #72ceed">lib</span><span> </span><span style="color: #bffaa0">=</span><span> </span><span style="color: #c97026">"</span><span style="color: #72ceed">Test_lib</span><span style="color: #c97026">"</span></p>
+        </div>
     </body>
 </html>
 
 <!--
 #import <stdlib>
-
 #define GLOBAL_STR "SimpleC test!"
-
 namespace m_nameSpace
 {
     public static class TestClass 
@@ -37,7 +37,6 @@ namespace m_nameSpace
             A = a;
             B = b;
         }
-
         public protected function void myFunc() 
         {
             console.print(GLOBAL_STR);
