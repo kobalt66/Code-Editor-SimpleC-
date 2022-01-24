@@ -3,7 +3,7 @@
 <html>
     <head>
         <link href="Test.css" rel="stylesheet"/>
-        <script src="Test.js"></script>
+        <script src="output.js"></script>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +14,8 @@
     </head>
     <header>
         <h1>Code Editor</h1>
-        <input type="button" value="Lexing" onclick="init()"/>
     </header>
-    <body onload="init()">
+    <body id="body">
         <textarea name="editor" id="editor" cols="5" rows="5">#lib = "Test_lib"</textarea>
         <div output="output" id="output">
             <p><span> </span><span style="color: #dbdbdb">#</span><span style="color: #72ceed">lib</span><span> </span><span style="color: #bffaa0">=</span><span> </span><span style="color: #c97026">"</span><span style="color: #72ceed">Test_lib</span><span style="color: #c97026">"</span></p>
