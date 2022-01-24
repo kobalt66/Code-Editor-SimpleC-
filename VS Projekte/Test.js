@@ -137,8 +137,55 @@ const EOF = 'endoffile';
 
 const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const digits = '0123456789';
-const letgits = letters + digits;
+const letters_digits = letters + digits;
 
+// Editor data
+function genLine(ln, max_rowIdx) {
+    lineData.push({
+        ln : ln,
+        max_rowIdx : max_rowIdx
+    });
+}
+
+// If the shift or alt key is pressed specific characters will output special characters.
+const shiftChars = {
+    '1' : '!',
+    '2' : '"',
+    '3' : '§',
+    '4' : '$',
+    '5' : '%',
+    '6' : '&',
+    '7' : '/',
+    '8' : '(',
+    '9' : ')',
+    '0' : '=',
+    'ß' : '?',
+    '#' : '\'',
+    '+' : '*',
+    ',' : ';',
+    '.' : ':',
+    '-' : '_',
+    '<' : '>'
+}
+const altChars = {
+    '5' : '[',
+    '6' : ']',
+    '7' : '|',
+    '8' : '{',
+    '9' : '}',
+    'l' : '@'
+}
+
+const currentPos = {
+    currLn : 0,
+    currRow : 0,
+    'AltLeft' : false,
+    'ShiftLeft' : false
+}
+var lineData = [];
+var current_code = '';
+
+// Editor functions
 function genTok(row, value, type) {
     return {
         rowPos: row,
@@ -150,7 +197,7 @@ function genTok(row, value, type) {
 function highlight_code(tokens) {
     var output = '<p>';
     tokens.forEach(token => {
-        console.log(token);
+        //console.log(token);
         if ([newline, whitespace].includes(token.type))
             output += '<span>';
         else
@@ -183,7 +230,7 @@ function highlight_code(tokens) {
                 output += '#507a43">';
                 break;
             case whitespace:
-                output += ' ';
+                output += '&nbsp;';
                 break;
             case newline:
                 output += '<br>';
@@ -194,23 +241,17 @@ function highlight_code(tokens) {
     });
     output += '</p>';
 
-    var code = document.getElementById("code").contentWindow.document;
-    document.body.onkeyup = function() {
-        code.open();
-        code.writeln(
-            "<style>" +
-            output + 
-            "</script>"
-        );
-        code.close();
-    };
+    var code = document.getElementById("output");
+    code.innerHTML = output;
 }
 
 function lexing(code) {
+    // Reset data
     console.clear();
-    console.log(code);
+    lineData = [];
 
     // Generating tokenlist
+    var ln = 0;
     var row = -1;
     var idx = -1;
     var tokens = [];
@@ -221,7 +262,7 @@ function lexing(code) {
     var value = undefined;
 
     // Functions
-    const advance = (advFrom) => {
+    const advance = (advFrom='std while') => {
         if (idx + 1 < code.length) {
             idx++;
             row++;
@@ -232,22 +273,11 @@ function lexing(code) {
         //console.log(char + " : Advace from '" + advFrom + "'");
         return char;
     }
-    const reverse = (count = 1) => {
-        if (idx - count <= 0) {
-            row = 0;
-            idx = 0;
-        }
-        row -= count;
-        idx -= count;
-        char = code[idx];
-        return char;
-    }
-
     const genIdentifier = () => {
         var str = '';
 
         //console.log(`Check if ${char} is inside ${letters} : ${(letters + '_').includes(char)}`);
-        while ((letgits + '_').includes(char)) {
+        while ((letters_digits + '_').includes(char)) {
             str += char;
             advance('genIdentifier');
         }
@@ -331,7 +361,14 @@ function lexing(code) {
                 advance('std while (l.301)');
                 break;
             case NL:
+                // Save current line data
+                genLine(ln, row);
+
+                // Update line
+                ln++;
                 row = 0;
+
+                // Safe the newline token
                 value = NL;
                 type = newline;
                 advance('std while (l.307)');
@@ -358,8 +395,8 @@ function lexing(code) {
                 value = char;
                 advance('std while (l.330)');
                 break;
-            case ' ':
             case undefined:
+            case ' ':
                 type = whitespace;
                 value = '';
                 advance('std while');
@@ -370,10 +407,51 @@ function lexing(code) {
         }
         tokens.push(genTok(row, value, type));
     }
-
+    
+    tokens.shift();
     highlight_code(tokens);
 }
 
 function getCode() {
     return document.getElementsByName("editor")[0].value;
+}
+
+
+function init() {
+    document.addEventListener('keydown', function (e) {
+        console.log(e.code);
+        switch (e.code) {
+            case 'AltLeft':
+            case 'ShiftLeft':
+                currentPos[e.code] = true;
+                break;
+            default:
+                var currChar = String.fromCharCode(e.code);
+                if (currentPos.AltLeft) {
+                    if (altChars.hasOwnProperty(currChar))
+                        current_code += altChars[currChar];
+                }
+                else if (currentPos.ShiftLeft) {
+                    if (shiftChars.hasOwnProperty(currChar))
+                        current_code += shiftChars[currChar];
+                    else
+                        current_code += currChar.toUpperCase();
+                }
+                else {
+                    current_code += currChar;
+                }
+
+                console.log(current_code);
+                //lexing(current_code);
+                break;
+        }
+    });
+    document.addEventListener('keyup', function (e) {
+        switch (e.code) {
+            case 'AltLeft':
+            case 'ShiftLeft':
+                currentPos[e.code] = false;
+                break;
+        }
+    });
 }
