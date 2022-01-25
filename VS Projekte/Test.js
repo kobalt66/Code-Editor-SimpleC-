@@ -11,6 +11,7 @@ const cPos = {
 }
 var lineData = [];
 var current_code = '';
+var final_code = '';
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -35,8 +36,6 @@ function highlight_code(tokens) {
 
         if ([c.newline, c.whitespace].includes(token.type))
             output += '<span>';
-        else if (c.selectedChar === token.type)
-            output += '<span style="background-color: #877100;">'
         else
             output += '<span style="color: ';
 
@@ -64,7 +63,7 @@ function highlight_code(tokens) {
                 break;
             case c.comment:
                 token.value = token.value.replace(/\n/i, '<br>');
-                output += '#507a43;"';
+                output += '#507a43;">';
                 break;
             case c.whitespace:
                 output += '&nbsp;';
@@ -73,7 +72,8 @@ function highlight_code(tokens) {
                 output += '<br>';
                 break;
             case c.selectedChar:
-                output += '#eb4034"'
+                output += '#eb4034">'
+                break;
         }
         
         output += token.value;
@@ -113,7 +113,6 @@ function lexing(code) {
             char = c.EOF;
           
         //console.log(char + " : Advace from '" + advFrom + "'");
-        checkForSelected();
         return char;
     }
     const genIdentifier = () => {
@@ -166,12 +165,6 @@ function lexing(code) {
         }
         
         value = str;
-    }
-    const checkForSelected = () => {
-        //console.log(`Token idx: ${idx} vs cPos idx: ${cPos.idx}`);
-        if (idx === cPos.idx) {
-            //console.log(char);
-        }
     }
 
     // Loop through all the characters
@@ -269,28 +262,40 @@ function updateCursor(newIdx) {
                 return;
             break;
     }
+
     cPos.idx += newIdx;
+    final_code = current_code.replaceAt(cPos.idx, '@');
 }
 function addCharTocode(char, idx) {
-    var firstPart = current_code.substring(0, idx + 1);
-    var secondPart = current_code.substring(idx + 1);
-    if (current_code.length === 1)
-        firstPart = current_code;
+    var strArray = Array.from(current_code);
+    var finalStr = '';
 
-    console.log("First part: " + firstPart);
-    console.log("Char: " + char);
-    console.log("Second part: " + secondPart);
+    if (strArray.length === 0) {
+        strArray.push(char);
+    }
+    else {
+        for (let i = 0; i < strArray.length; i++) {
+            if (i === idx)
+                finalStr += char;
 
-    current_code = firstPart + char + secondPart;
+            finalStr += strArray[i];
+        }
+
+        current_code = finalStr;
+        return;
+    }
+    
+    strArray.forEach(c => finalStr += c);
+    current_code = finalStr;
 }
 
 
 function init() {
     console.log("Called init function.");
-
+    
     // Key events
     document.addEventListener('keydown', function (e) {
-        //console.log(e.code);
+        console.log(e.code);
 
         switch (e.code) {
             case 'AltLeft':
@@ -298,7 +303,7 @@ function init() {
                 cPos[e.code] = true;
                 break;
             case 'Enter':
-                current_code += '\n';
+                addCharTocode('\n', cPos.idx);
                 updateCursor(1);
                 break;
             case 'Backspace':
@@ -306,6 +311,10 @@ function init() {
                     current_code = current_code.removeAt(cPos.idx);
                     updateCursor(-1);
                 }
+                break;
+            case 'Delete':
+                if (current_code.length > 0 && cPos.idx < current_code.length - 1)
+                    current_code = current_code.removeAt(cPos.idx + 1);
                 break;
             case 'ArrowLeft':
                 updateCursor(-1);
@@ -336,8 +345,9 @@ function init() {
                 break;
         }
 
-        current_code = current_code.replaceAt(cPos.idx, '@');
-        lexing(current_code);
+        //console.log(code);
+        updateCursor(0);
+        lexing(final_code);
     });
     document.addEventListener('keyup', function (e) {
         switch (e.code) {
@@ -352,6 +362,12 @@ function init() {
 init();
 
 // TODOs:
+/////////////////////////////////////////////////////////////////////////////////////////
 // Comment bug: Wenn man in einer neuen Zeile / schreibt, wird dieses Zeichen in die folgende Zeile gerückt. 
 //              Wenn man nun nochmal / eingibt, springt der Comment wieder in die richtige Zeile.
 //              Kommentar blöcke funktionieren nicht.
+//
+// Pfeiltasten: Wenn man mit den Pfeiltasten durch den Code scrollt verschiebt man die Buchstaben.
+//
+// Erster geschriebenes Zeichen: Das erste geschriebene Zeichen wird nicht anerkannt.
+/////////////////////////////////////////////////////////////////////////////////////////
