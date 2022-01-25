@@ -272,14 +272,6 @@ String.prototype.removeAt = function(idx) {
     }
     return this.substring(0, idx) + this.substring(idx + 1);
 }
-String.prototype.replaceAt = function(idx, char) {
-    var strArray = Array.from(this.valueOf());
-    strArray[idx] = char;
-    
-    var finalStr = '';
-    strArray.forEach(c => finalStr += c);
-    return finalStr;
-}
 
 module.exports = {
     operator : operator, 
@@ -306,6 +298,5 @@ module.exports = {
     shiftChars : shiftChars,
     altChars : altChars,
     getCharFromKeycode : getCharFromKeycode,
-    removeAt : String.prototype.removeAt,
-    replaceAt : String.prototype.removeAt
+    removeAt : String.prototype.removeAt
 };
