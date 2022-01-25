@@ -273,11 +273,12 @@ String.prototype.removeAt = function(idx) {
     return this.substring(0, idx) + this.substring(idx + 1);
 }
 String.prototype.replaceAt = function(idx, char) {
-    if (idx >= this.length) {
-        return this.valueOf();
-    }
-
-    return this.substring(0, idx) + char + this.substring(idx + 1);
+    var strArray = Array.from(this.valueOf());
+    strArray[idx] = char;
+    
+    var finalStr = '';
+    strArray.forEach(c => finalStr += c);
+    return finalStr;
 }
 
 module.exports = {
