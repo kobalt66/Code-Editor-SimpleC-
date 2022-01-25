@@ -1,10 +1,11 @@
 var c = require("./Constant.js");
 console.log(c);
+String.prototype.removeAt = c.removeAt;
+String.prototype.replaceAt = c.replaceAt;
 
 // Editor data
-const currentPos = {
-    currLn : 0,
-    currRow : 0,
+const cPos = {
+    idx : -1,
     'AltLeft' : false,
     'ShiftLeft' : false
 }
@@ -12,8 +13,9 @@ var lineData = [];
 var current_code = '';
 
 // Editor functions
-function genTok(row, value, type) {
+function genTok(idx, row, value, type) {
     return {
+        idx: idx,
         rowPos: row,
         value: value,
         type: type
@@ -30,36 +32,39 @@ function highlight_code(tokens) {
     var output = '<p>';
     tokens.forEach(token => {
         //console.log(token);
+
         if ([c.newline, c.whitespace].includes(token.type))
             output += '<span>';
+        else if (c.selectedChar === token.type)
+            output += '<span style="background-color: #877100;">'
         else
             output += '<span style="color: ';
 
         switch (token.type) {
             case c.operator:
-                output += '#bffaa0">';
+                output += '#bffaa0;">';
                 break;
             case c.keyword:
-                output += '#faa0ec">';
+                output += '#faa0ec;">';
                 break;
             case c.vartype:
-                output += '#91abff">';
+                output += '#91abff;">';
                 break;
             case c.identifier:
-                output += '#72ceed">';
+                output += '#72ceed;">';
                 break;
             case c.textelement:
-                output += '#dbdbdb">';
+                output += '#dbdbdb;">';
                 break;
             case c.text:
-                output += '#c97026">';
+                output += '#c97026;">';
                 break;
             case c.number:
-                output += '#ffde85">';
+                output += '#ffde85;">';
                 break;
             case c.comment:
                 token.value = token.value.replace(/\n/i, '<br>');
-                output += '#507a43">';
+                output += '#507a43;"';
                 break;
             case c.whitespace:
                 output += '&nbsp;';
@@ -67,19 +72,23 @@ function highlight_code(tokens) {
             case c.newline:
                 output += '<br>';
                 break;
+            case c.selectedChar:
+                output += '#eb4034"'
         }
+        
         output += token.value;
         output += '</span>';
     });
     output += '</p>';
 
+    //lineData.forEach(l => console.log(l));
     var code = document.getElementById("output");
     code.innerHTML = output;
 }
 
 function lexing(code) {
     // Reset data
-    console.clear();
+    //console.clear();
     lineData = [];
 
     // Generating tokenlist
@@ -102,7 +111,9 @@ function lexing(code) {
         }
         else
             char = c.EOF;
+          
         //console.log(char + " : Advace from '" + advFrom + "'");
+        checkForSelected();
         return char;
     }
     const genIdentifier = () => {
@@ -122,49 +133,45 @@ function lexing(code) {
     const genCommentOrDivide = () => {
         var str = char;
         advance();
-        if (char !== c.ops.DIVIDE && char !== c.ops.MULTIPLY) {
-            value = str;
-            return;
-        }
-        else if (char === c.ops.DIVIDE) {
-            type = comment;
-            
-            str += char;
-            advance();
+        if (char === c.ops.DIVIDE) {
+            type = c.comment;
             str += char;
             
             while (char !== c.NL) {
-                if (char === c.EOF)
-                    break;
                 advance();
+                if ([c.EOF, c.NL].includes(char))
+                    break;
                 str += char;
             }
         }
         else if (char === c.ops.MULTIPLY) {
-            type = comment;
-            
-            str += char;
-            advance();
+            type = c.comment;
             str += char;
 
             while (char != c.EOF) {
                 if (char === c.ops.MULTIPLY) {
                     advance();
-                    if (char !== c.EOF)
+                    if (![c.EOF, c.NL].includes(char))
                         str += char;
                     
-                        if (char === c.ops.DIVIDE) {
+                    if (char === c.ops.DIVIDE) {
                         advance();
                         break;
                     }
                 }
                 advance();
-                if (char !== c.EOF)
+                if (![c.EOF, c.NL].includes(char))
                     str += char;
             }
         }
-
+        
         value = str;
+    }
+    const checkForSelected = () => {
+        //console.log(`Token idx: ${idx} vs cPos idx: ${cPos.idx}`);
+        if (idx === cPos.idx) {
+            //console.log(char);
+        }
     }
 
     // Loop through all the characters
@@ -193,9 +200,6 @@ function lexing(code) {
                 advance('std while (l.301)');
                 break;
             case c.NL:
-                // Save current line data
-                genLine(ln, row);
-
                 // Update line
                 ln++;
                 row = 0;
@@ -233,65 +237,121 @@ function lexing(code) {
                 value = '';
                 advance('std while');
                 break;
+            case c.codeStructure.selected:
+                type = c.selectedChar;
+                value = '@'
+                advance();
+                break;
             default:
                 genIdentifier();
                 break;
         }
-        tokens.push(genTok(row, value, type));
+        tokens.push(genTok(idx, row, value, type));
+        if (lineData.every(l => l.ln !== ln))
+            genLine(ln, row);
+        else
+            lineData[ln].max_rowIdx = row;
     }
     
     tokens.shift();
     highlight_code(tokens);
 }
 
+// Coding functions
+function updateCursor(newIdx) {
+    switch (newIdx) {
+        case 1:
+            if (cPos.idx + 1 > current_code.length -1)
+                return;
+            break;
+        case -1:
+            if (cPos.idx - 1 < 0)
+                return;
+            break;
+    }
+    cPos.idx += newIdx;
+}
+function addCharTocode(char, idx) {
+    var firstPart = current_code.substring(0, idx + 1);
+    var secondPart = current_code.substring(idx + 1);
+    if (current_code.length === 1)
+        firstPart = current_code;
+
+    console.log("First part: " + firstPart);
+    console.log("Char: " + char);
+    console.log("Second part: " + secondPart);
+
+    current_code = firstPart + char + secondPart;
+}
+
+
 function init() {
     console.log("Called init function.");
+
+    // Key events
     document.addEventListener('keydown', function (e) {
-        console.log(e.code);
+        //console.log(e.code);
 
         switch (e.code) {
             case 'AltLeft':
             case 'ShiftLeft':
-                currentPos[e.code] = true;
+                cPos[e.code] = true;
                 break;
             case 'Enter':
                 current_code += '\n';
+                updateCursor(1);
                 break;
             case 'Backspace':
-                if (current_code.length > 0)
-                    current_code = current_code.slice(0, -1);
+                if (current_code.length > 0) {
+                    current_code = current_code.removeAt(cPos.idx);
+                    updateCursor(-1);
+                }
+                break;
+            case 'ArrowLeft':
+                updateCursor(-1);
+                break;
+            case 'ArrowRight':
+                updateCursor(1);
                 break;
             default:
                 var char = c.getCharFromKeycode(e.code);
-                
+
                 if (!char) break;
 
-                if (currentPos.AltLeft) {
+                if (cPos.AltLeft) {
                     if (c.altChars.hasOwnProperty(char))
-                        current_code += c.altChars[char];
+                        addCharTocode(c.altChars[char], cPos.idx);
                 }
-                else if (currentPos.ShiftLeft) {
+                else if (cPos.ShiftLeft) {
                     if (c.shiftChars.hasOwnProperty(char))
-                        current_code += c.shiftChars[char];
+                        addCharTocode(c.shiftChars[char], cPos.idx);
                     else
-                        current_code += char.toUpperCase();
+                        addCharTocode(char.toUpperCase(), cPos.idx);
                 }
                 else {
-                    current_code += char;
+                    addCharTocode(char, cPos.idx);
                 }
+
+                updateCursor(1);
                 break;
         }
 
+        current_code = current_code.replaceAt(cPos.idx, '@');
         lexing(current_code);
     });
     document.addEventListener('keyup', function (e) {
         switch (e.code) {
             case 'AltLeft':
             case 'ShiftLeft':
-                currentPos[e.code] = false;
+                cPos[e.code] = false;
                 break;
         }
     });
 }
 
 init();
+
+// TODOs:
+// Comment bug: Wenn man in einer neuen Zeile / schreibt, wird dieses Zeichen in die folgende Zeile gerückt. 
+//              Wenn man nun nochmal / eingibt, springt der Comment wieder in die richtige Zeile.
+//              Kommentar blöcke funktionieren nicht.
