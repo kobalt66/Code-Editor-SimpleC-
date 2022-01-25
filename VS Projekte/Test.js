@@ -389,4 +389,6 @@ init();
 //
 // Ausnahmen: Dinge wie Strings oder dotaccess supporten, sodass diese eine andere Farbe haben!
 //
+// Metacode: Meta Keywords hinzufügen, sodass begriffe wie 'define' eine bestimmte farbe haben.
+//
 /////////////////////////////////////////////////////////////////////////////////////////
