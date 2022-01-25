@@ -9,6 +9,7 @@ const number = 'number';           // pale yellow
 const comment = 'comment';         // dark green
 const newline = 'newline';
 const whitespace = 'whitespace';
+const selectedChar = 'selectedChar';
 
 // Predefined token values
 // Keywords
@@ -119,6 +120,7 @@ const rightB = ')';
 const endcolumn = ';';
 const comma = ',';
 const hashtag = '#';
+const selected = '@';
 
 const codeStructure = {
     leftCB : leftCB,
@@ -129,7 +131,8 @@ const codeStructure = {
     rightB : rightB,
     endcolumn : endcolumn,
     comma : comma,
-    hashtag : hashtag
+    hashtag : hashtag,
+    selected : selected
 };
 
 const NL = '\n';
@@ -263,6 +266,20 @@ function getCharFromKeycode(code) {
     }
 }
 
+String.prototype.removeAt = function(idx) {
+    if (idx >= this.length) {
+        return this.valueOf();
+    }
+    return this.substring(0, idx) + this.substring(idx + 1);
+}
+String.prototype.replaceAt = function(idx, char) {
+    if (idx >= this.length) {
+        return this.valueOf();
+    }
+
+    return this.substring(0, idx) + char + this.substring(idx + 1);
+}
+
 module.exports = {
     operator : operator, 
     keyword : keyword, 
@@ -275,6 +292,7 @@ module.exports = {
     newline : newline, 
     whitespace : whitespace, 
     keywords : keywords,
+    selectedChar : selectedChar,
     types : types,
     ops : ops,
     codeStructure : codeStructure,
@@ -286,5 +304,7 @@ module.exports = {
     letters_digits : letters_digits,
     shiftChars : shiftChars,
     altChars : altChars,
-    getCharFromKeycode : getCharFromKeycode
+    getCharFromKeycode : getCharFromKeycode,
+    removeAt : String.prototype.removeAt,
+    replaceAt : String.prototype.removeAt
 };
