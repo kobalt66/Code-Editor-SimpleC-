@@ -3,14 +3,14 @@ console.log(c);
 String.prototype.removeAt = c.removeAt;
 
 // Editor data
+var lineData = [];
+var current_code = ' ';
+var final_code = '';
 const cPos = {
     idx : 0,
     'AltLeft' : false,
     'ShiftLeft' : false
 }
-var lineData = [];
-var current_code = '';
-var final_code = '';
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -251,20 +251,19 @@ function lexing(code) {
 
 // Coding functions
 function updateCursor(newIdx) {
-    final_code = replaceAt(cPos.idx, '@');
-
-    switch (newIdx) {
-        case 1:
-            if (cPos.idx + 1 > current_code.length -1)
-                return;
-            break;
-        case -1:
-            if (cPos.idx - 1 < 0)
-                return;
-            break;
+    if (newIdx > 0) {
+        if (cPos.idx + newIdx > current_code.length -1)
+            cPos.idx = current_code.length - 1;
+        else
+            cPos.idx += newIdx;
     }
-
-    cPos.idx += newIdx;
+    else if (newIdx < 0) {
+        if (cPos.idx - newIdx < 0)
+            cPos.idx = 0;
+        else
+            cPos.idx += newIdx;
+    }
+    
     final_code = replaceAt(cPos.idx, '@');
 }
 function addCharTocode(char, idx=0) {
@@ -299,7 +298,7 @@ function replaceAt(idx, char) {
     return finalStr;
 }
 
-
+// Initializing code
 function init() {
     console.log("Called init function.");
     
@@ -327,10 +326,16 @@ function init() {
                     current_code = current_code.removeAt(cPos.idx + 1);
                 break;
             case 'ArrowLeft':
-                updateCursor(-1);
+                if (cPos.ShiftLeft)
+                    updateCursor(-5);
+                else
+                    updateCursor(-1);
                 break;
             case 'ArrowRight':
-                updateCursor(1);
+                if (cPos.ShiftLeft)
+                    updateCursor(5);
+                else
+                    updateCursor(1);
                 break;
             default:
                 var char = c.getCharFromKeycode(e.code);
@@ -378,8 +383,10 @@ init();
 //
 // Pfeiltasten: Wenn man mit den Pfeiltasten durch den Code scrollt verschiebt man die Buchstaben.
 //
-// Erster geschriebenes Zeichen: Das erste geschriebene Zeichen wird nicht anerkannt.
+// Erster geschriebenes Zeichen: Das erste geschriebene Zeichen wird anerkannt, aber der cursor wird nicht geupdated.
 //
-// Newlines: Wenn man sich mit den Pfeiltasten bewegt, werden natürlich auf newlines als Zeichen 
-//           angesehen und somit auch durch den Cursor ersetzt.
+// Pfeiltasten: ArrowUp und ArrowDown Tasten implementieren.
+//
+// Ausnahmen: Dinge wie Strings oder dotaccess supporten, sodass diese eine andere Farbe haben!
+//
 /////////////////////////////////////////////////////////////////////////////////////////
