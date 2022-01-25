@@ -17,8 +17,7 @@ header {
 p {
     width: 100%;
     min-height: 600px;
-    max-height: 600px;
-    overflow: scroll;
+    overflow: visible;
     margin: auto;
     display: inline-block;
     background-color: #2b2b2b;
@@ -26,13 +25,12 @@ p {
     font-family: 'Overpass Mono', monospace;
     font-size: 20px;
     color: rgb(219, 219, 219);
-    overflow-x: visible;
-    overflow-y: visible;
 }
 
 div {
     text-align: left;
     background-color: #2b2b2b;
+    min-height: 600px;
 }
 
 html {
