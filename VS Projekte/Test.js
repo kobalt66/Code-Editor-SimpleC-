@@ -258,7 +258,7 @@ function updateCursor(newIdx) {
             cPos.idx += newIdx;
     }
     else if (newIdx < 0) {
-        if (cPos.idx - newIdx < 0)
+        if (cPos.idx + newIdx < 0)
             cPos.idx = 0;
         else
             cPos.idx += newIdx;
