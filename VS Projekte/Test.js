@@ -1,11 +1,10 @@
 var c = require("./Constant.js");
 console.log(c);
 String.prototype.removeAt = c.removeAt;
-String.prototype.replaceAt = c.replaceAt;
 
 // Editor data
 const cPos = {
-    idx : -1,
+    idx : 0,
     'AltLeft' : false,
     'ShiftLeft' : false
 }
@@ -252,6 +251,8 @@ function lexing(code) {
 
 // Coding functions
 function updateCursor(newIdx) {
+    final_code = replaceAt(cPos.idx, '@');
+
     switch (newIdx) {
         case 1:
             if (cPos.idx + 1 > current_code.length -1)
@@ -264,29 +265,35 @@ function updateCursor(newIdx) {
     }
 
     cPos.idx += newIdx;
-    final_code = current_code.replaceAt(cPos.idx, '@');
+    final_code = replaceAt(cPos.idx, '@');
 }
-function addCharTocode(char, idx) {
-    var strArray = Array.from(current_code);
+function addCharTocode(char, idx=0) {
+    var strArray = [];
     var finalStr = '';
+    strArray = Array.from(current_code);
 
     if (strArray.length === 0) {
-        strArray.push(char);
-    }
-    else {
-        for (let i = 0; i < strArray.length; i++) {
-            if (i === idx)
-                finalStr += char;
-
-            finalStr += strArray[i];
-        }
-
-        current_code = finalStr;
+        current_code = char;
         return;
     }
     
-    strArray.forEach(c => finalStr += c);
+    for (let i = 0; i < strArray.length; i++) {
+        if (i === idx)
+            finalStr += char;
+
+        finalStr += strArray[i];
+    }
+
     current_code = finalStr;
+    return;
+}
+function replaceAt(idx, char) {
+    var strArray = Array.from(current_code);
+    strArray[idx] = char;
+
+    var finalStr = '';
+    strArray.forEach(c => finalStr += c);
+    return finalStr;
 }
 
 
@@ -295,7 +302,7 @@ function init() {
     
     // Key events
     document.addEventListener('keydown', function (e) {
-        console.log(e.code);
+        //console.log(e.code);
 
         switch (e.code) {
             case 'AltLeft':
@@ -307,8 +314,8 @@ function init() {
                 updateCursor(1);
                 break;
             case 'Backspace':
-                if (current_code.length > 0) {
-                    current_code = current_code.removeAt(cPos.idx);
+                if (cPos.idx -1 >= 0) {
+                    current_code = current_code.removeAt(cPos.idx - 1);
                     updateCursor(-1);
                 }
                 break;
@@ -347,6 +354,7 @@ function init() {
 
         //console.log(code);
         updateCursor(0);
+        console.log(cPos.idx);
         lexing(final_code);
     });
     document.addEventListener('keyup', function (e) {
@@ -370,4 +378,7 @@ init();
 // Pfeiltasten: Wenn man mit den Pfeiltasten durch den Code scrollt verschiebt man die Buchstaben.
 //
 // Erster geschriebenes Zeichen: Das erste geschriebene Zeichen wird nicht anerkannt.
+//
+// Newlines: Wenn man sich mit den Pfeiltasten bewegt, werden natürlich auf newlines als Zeichen 
+//           angesehen und somit auch durch den Cursor ersetzt.
 /////////////////////////////////////////////////////////////////////////////////////////
