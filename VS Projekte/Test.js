@@ -289,7 +289,10 @@ function addCharTocode(char, idx=0) {
 }
 function replaceAt(idx, char) {
     var strArray = Array.from(current_code);
-    strArray[idx] = char;
+    if (strArray[idx] === '\n')
+        strArray[idx] = char + '\n';
+    else
+        strArray[idx] = char;
 
     var finalStr = '';
     strArray.forEach(c => finalStr += c);
@@ -352,9 +355,7 @@ function init() {
                 break;
         }
 
-        //console.log(code);
         updateCursor(0);
-        console.log(cPos.idx);
         lexing(final_code);
     });
     document.addEventListener('keyup', function (e) {
