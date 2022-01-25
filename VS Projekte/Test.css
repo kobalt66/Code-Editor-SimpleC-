@@ -20,6 +20,7 @@ h1 {
     width: 20%;
     position: static;
     border: 5px dotted rgb(255, 207, 207) ;
+    color:rgb(235, 235, 235);
 }
 
 header {
@@ -36,9 +37,16 @@ p {
     outline: none;
     font-family: 'Overpass Mono', monospace;
     font-size: 20px;
-    color: rgb(219, 219, 219);
+    overflow-x: visible;
+    overflow-y: visible;
+    scrollbar-face-color: #383737;
 }
 
 div {
     text-align: left;
+    background-color: #2b2b2b;
+}
+
+html {
+    background-color: #383737;
 }
