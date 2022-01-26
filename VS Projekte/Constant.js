@@ -1,14 +1,15 @@
 // Token types
-const operator = 'operator';       // pale green
-const keyword = 'keyword';         // dark pink
-const metacode = 'metacode';       // dark purple
-const vartype = 'type';            // dark blue
-const identifier = 'identifier';   // light blue
+const operator = 'operator';             // pale green
+const keyword = 'keyword';               // dark pink
+const metacode = 'metacode';             // dark purple
+const vartype = 'type';                  // dark blue
+const identifier = 'identifier';         // light blue
 const functionCall = 'functionCall';     // yellow
-const textelement = 'textelement'; // white
-const text = 'text';               // dark orange
-const number = 'number';           // pale yellow
-const comment = 'comment';         // dark green
+const byteexpr = 'byteexpr';             // grayish color
+const textelement = 'textelement';       // white
+const text = 'text';                     // dark orange
+const number = 'number';                 // pale yellow
+const comment = 'comment';               // dark green
 const newline = 'newline';
 const whitespace = 'whitespace';
 const selectedChar = 'selectedChar';
@@ -290,6 +291,7 @@ module.exports = {
     metacode : metacode,
     vartype : vartype, 
     identifier : identifier,
+    byteexpr : byteexpr,
     functionCall : functionCall, 
     textelement : textelement, 
     text : text, 
