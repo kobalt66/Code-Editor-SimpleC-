@@ -405,12 +405,15 @@ function init() {
 
     // Key events
     document.addEventListener('keydown', function (e) {
-        //console.log(e.code);
+        console.log(e.code);
 
         switch (e.code) {
+            case 'AltRight':
             case 'AltLeft':
+            case 'ShiftRight':
             case 'ShiftLeft':
-                cPos[e.code] = true;
+                var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
+                cPos[keycode] = true;
                 break;
             case 'Enter':
                 addCharTocode('\n', cPos.idx);
@@ -466,6 +469,10 @@ function init() {
                     cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
                 }
                 break;
+            case 'KeyC':
+                if (cPos.ShiftLeft)
+                    
+                break;
             default:
                 var char = c.getCharFromKeycode(e.code);
 
@@ -501,9 +508,12 @@ function init() {
     });
     document.addEventListener('keyup', function (e) {
         switch (e.code) {
+            case 'AltRight':
             case 'AltLeft':
+            case 'ShiftRight':
             case 'ShiftLeft':
-                cPos[e.code] = false;
+                var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
+                cPos[keycode] = false;
                 break;
         }
     });
