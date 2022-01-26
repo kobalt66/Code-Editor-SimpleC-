@@ -492,7 +492,6 @@ function init() {
         updateCursor(0);
         lexing(final_code);
         
-        console.log(lineData.length);
         // Display lines
         var str = '';
         for (let i = 1; i < lineData.length + 1; i++)
