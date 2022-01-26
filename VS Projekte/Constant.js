@@ -1,6 +1,7 @@
 // Token types
 const operator = 'operator';       // pale green
 const keyword = 'keyword';         // dark pink
+const metacode = 'metacode';       // dark purple
 const vartype = 'type';            // dark blue
 const identifier = 'identifier';   // light blue
 const textelement = 'textelement'; // white
@@ -53,6 +54,15 @@ const keywords = [
     'dbl',
     'bol',
     'typ'
+];
+const metaKeywords = [
+    "lib",
+    "import",
+    "define",
+    "metif",
+    "metelif",
+    "metelse",
+    "metendif"
 ];
 
 // Variable types
@@ -275,7 +285,8 @@ String.prototype.removeAt = function(idx) {
 
 module.exports = {
     operator : operator, 
-    keyword : keyword, 
+    keyword : keyword,
+    metacode : metacode,
     vartype : vartype, 
     identifier : identifier , 
     textelement : textelement, 
@@ -285,6 +296,7 @@ module.exports = {
     newline : newline, 
     whitespace : whitespace, 
     keywords : keywords,
+    metaKeywords: metaKeywords,
     selectedChar : selectedChar,
     types : types,
     ops : ops,
