@@ -1,3 +1,4 @@
+const { comment } = require("./Constant.js");
 var c = require("./Constant.js");
 console.log(c);
 String.prototype.removeAt = c.removeAt;
@@ -45,6 +46,9 @@ function highlight_code(tokens) {
             case c.keyword:
                 output += '#faa0ec;">';
                 break;
+            case c.metacode:
+                output += '#ac77ed">';
+                break;
             case c.vartype:
                 output += '#91abff;">';
                 break;
@@ -55,7 +59,7 @@ function highlight_code(tokens) {
                 output += '#dbdbdb;">';
                 break;
             case c.text:
-                output += '#c97026;">';
+                output += '#f0c141;">';
                 break;
             case c.number:
                 output += '#ffde85;">';
@@ -87,7 +91,6 @@ function highlight_code(tokens) {
 
 function lexing(code) {
     // Reset data
-    //console.clear();
     lineData = [];
 
     // Generating tokenlist
@@ -124,46 +127,95 @@ function lexing(code) {
         }
 
         type = c.keywords.includes(str) ? c.keyword : c.identifier;
+        type = c.metaKeywords.includes(str) ? c.metacode : type;
         type = c.types.includes(str) ? c.vartype : type;
         type = Number.isInteger(Number.parseInt(str)) ? c.number : type;
         value = str;
     }
     const genCommentOrDivide = () => {
         var str = char;
+        type = c.operator;
         advance();
+
         if (char === c.ops.DIVIDE) {
-            type = c.comment;
-            str += char;
-            
-            while (char !== c.NL) {
-                advance();
+            while (true) {
                 if ([c.EOF, c.NL].includes(char))
                     break;
                 str += char;
+                advance();
             }
+
+            type = c.comment;
         }
         else if (char === c.ops.MULTIPLY) {
-            type = c.comment;
             str += char;
+            advance();
 
-            while (char != c.EOF) {
+            while (true) {
+                if (char === c.EOF) break;
                 if (char === c.ops.MULTIPLY) {
+                    str += char;
                     advance();
-                    if (![c.EOF, c.NL].includes(char))
-                        str += char;
-                    
+
                     if (char === c.ops.DIVIDE) {
+                        str += char;
                         advance();
                         break;
                     }
                 }
-                advance();
-                if (![c.EOF, c.NL].includes(char))
+
+                if (char === c.NL)
+                    str += "<br>";
+                else
                     str += char;
+                
+                advance();
             }
+
+            type = c.comment;
         }
         
         value = str;
+    }
+    const genString = () => {
+        var str = char;
+        advance();
+
+        while (true) {
+            if (char === c.NL) {
+                str += "<br>";
+                advance();
+                continue;
+            }
+
+            if ([c.EOF].includes(char)) break;
+            else if (char === c.ops.QUOTE) {
+                str += char;
+                advance();
+                break;
+            }
+
+            str += char;
+            advance();
+        }
+    
+        type = c.text;
+        value = str;
+    }
+    const genChar = () => {
+        var str = char;
+        
+        advance();
+        str += char;
+        advance();
+
+        if (char === c.ops.SQUOTE) {
+            str += char;
+            advance();
+        }
+
+        value = str;
+        type = c.text;
     }
 
     // Loop through all the characters
@@ -218,10 +270,10 @@ function lexing(code) {
                 advance('std while (l.324)');
                 break;
             case c.ops.QUOTE:
+                genString();
+                break;
             case c.ops.SQUOTE:
-                type = c.text;
-                value = char;
-                advance('std while (l.330)');
+                genChar();
                 break;
             case undefined:
             case ' ':
@@ -238,6 +290,7 @@ function lexing(code) {
                 genIdentifier();
                 break;
         }
+
         tokens.push(genTok(idx, row, value, type));
         if (lineData.every(l => l.ln !== ln))
             genLine(ln, row);
@@ -302,6 +355,9 @@ function replaceAt(idx, char) {
 function init() {
     console.log("Called init function.");
     
+    // Set up document
+    window.getCode = getCode;
+
     // Key events
     document.addEventListener('keydown', function (e) {
         //console.log(e.code);
@@ -322,7 +378,7 @@ function init() {
                 }
                 break;
             case 'Delete':
-                if (current_code.length > 0 && cPos.idx < current_code.length - 1)
+                if (current_code.length > 0 && cPos.idx < current_code.length - 2)
                     current_code = current_code.removeAt(cPos.idx + 1);
                 break;
             case 'ArrowLeft':
@@ -372,14 +428,14 @@ function init() {
         }
     });
 }
+function getCode() {
+    return current_code;
+}
 
 init();
 
 // TODOs:
 /////////////////////////////////////////////////////////////////////////////////////////
-// Comment bug: Wenn man in einer neuen Zeile / schreibt, wird dieses Zeichen in die folgende Zeile gerückt. 
-//              Wenn man nun nochmal / eingibt, springt der Comment wieder in die richtige Zeile.
-//              Kommentar blöcke funktionieren nicht.
 //
 // Pfeiltasten: Wenn man mit den Pfeiltasten durch den Code scrollt verschiebt man die Buchstaben.
 //
@@ -388,7 +444,5 @@ init();
 // Pfeiltasten: ArrowUp und ArrowDown Tasten implementieren.
 //
 // Ausnahmen: Dinge wie Strings oder dotaccess supporten, sodass diese eine andere Farbe haben!
-//
-// Metacode: Meta Keywords hinzufügen, sodass begriffe wie 'define' eine bestimmte farbe haben.
 //
 /////////////////////////////////////////////////////////////////////////////////////////
