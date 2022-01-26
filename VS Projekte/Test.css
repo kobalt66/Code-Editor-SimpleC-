@@ -10,6 +10,7 @@ body {
 .line_nums {
     width: 5%;
     position: static;
+    overflow-x: scroll;
 }
 .editor {
     width: 90%;
