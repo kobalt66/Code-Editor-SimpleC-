@@ -10,7 +10,8 @@ var final_code = '';
 const cPos = {
     idx : 0,
     'AltLeft' : false,
-    'ShiftLeft' : false
+    'ShiftLeft' : false,
+    fastShift : 5
 }
 
 // Editor functions
@@ -372,24 +373,39 @@ function init() {
                 updateCursor(1);
                 break;
             case 'Backspace':
+                if (cPos.ShiftLeft) {
+                    for (let i = 0; i < cPos.fastShift; i++) {
+                        if (cPos.idx <= 0) break;
+                        current_code = current_code.removeAt(cPos.idx - 1);
+                        updateCursor(-1);
+                    }
+                    break;
+                }
                 if (cPos.idx -1 >= 0) {
                     current_code = current_code.removeAt(cPos.idx - 1);
                     updateCursor(-1);
                 }
                 break;
             case 'Delete':
+                if (cPos.ShiftLeft) {
+                    for (let i = 0; i < cPos.fastShift; i++) {
+                        if (current_code.length > 0 && cPos.idx < current_code.length - 2)
+                            current_code = current_code.removeAt(cPos.idx + 1);
+                    }
+                    break;
+                }
                 if (current_code.length > 0 && cPos.idx < current_code.length - 2)
                     current_code = current_code.removeAt(cPos.idx + 1);
                 break;
             case 'ArrowLeft':
                 if (cPos.ShiftLeft)
-                    updateCursor(-5);
+                    updateCursor(-cPos.fastShift);
                 else
                     updateCursor(-1);
                 break;
             case 'ArrowRight':
                 if (cPos.ShiftLeft)
-                    updateCursor(5);
+                    updateCursor(cPos.fastShift);
                 else
                     updateCursor(1);
                 break;
