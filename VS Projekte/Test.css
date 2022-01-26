@@ -2,6 +2,19 @@ body {
     text-align: center;
 }
 
+.line_nums, .editor {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.line_nums {
+    width: 5%;
+    position: static;
+}
+.editor {
+    width: 90%;
+}
+
 h1 {
     font-family: 'Montserrat';
     width: 20%;
@@ -19,7 +32,8 @@ p {
     min-height: 600px;
     overflow: visible;
     margin: auto;
-    display: inline-block;
+    flex: 1;
+    position: relative;
     background-color: #2b2b2b;
     outline: none;
     font-family: 'Overpass Mono', monospace;
