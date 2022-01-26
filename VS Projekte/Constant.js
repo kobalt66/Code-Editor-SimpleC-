@@ -4,6 +4,7 @@ const keyword = 'keyword';         // dark pink
 const metacode = 'metacode';       // dark purple
 const vartype = 'type';            // dark blue
 const identifier = 'identifier';   // light blue
+const functionCall = 'functionCall';     // yellow
 const textelement = 'textelement'; // white
 const text = 'text';               // dark orange
 const number = 'number';           // pale yellow
@@ -288,7 +289,8 @@ module.exports = {
     keyword : keyword,
     metacode : metacode,
     vartype : vartype, 
-    identifier : identifier , 
+    identifier : identifier,
+    functionCall : functionCall, 
     textelement : textelement, 
     text : text, 
     number : number, 
