@@ -1,4 +1,4 @@
-const { comment } = require("./Constant.js");
+const { comment, identifier } = require("./Constant.js");
 var c = require("./Constant.js");
 console.log(c);
 String.prototype.removeAt = c.removeAt;
@@ -78,6 +78,9 @@ function highlight_code(tokens) {
             case c.selectedChar:
                 output += '#eb4034">'
                 break;
+            case c.functionCall:
+                output += '#fce562">';
+                break;
         }
         
         output += token.value;
@@ -105,6 +108,9 @@ function lexing(code) {
     var type = undefined;
     var value = undefined;
 
+    // Lexing cases
+    var isDotAccess = false;
+
     // Functions
     const advance = (advFrom='std while') => {
         if (idx + 1 < code.length) {
@@ -124,13 +130,23 @@ function lexing(code) {
         //console.log(`Check if ${char} is inside ${letters} : ${(letters + '_').includes(char)}`);
         while ((c.letters_digits + '_').includes(char)) {
             str += char;
-            advance('genIdentifier');
+            advance();
         }
 
+        // Determin the token type
         type = c.keywords.includes(str) ? c.keyword : c.identifier;
         type = c.metaKeywords.includes(str) ? c.metacode : type;
         type = c.types.includes(str) ? c.vartype : type;
         type = Number.isInteger(Number.parseInt(str)) ? c.number : type;
+
+        // Special cases
+        if (type === c.identifier) {
+            if (isDotAccess) {
+                type = char === c.codeStructure.leftB ? c.functionCall : type;
+            }
+        }
+        
+        isDotAccess = false;
         value = str;
     }
     const genCommentOrDivide = () => {
@@ -235,14 +251,19 @@ function lexing(code) {
             case c.ops.NOT:
             case c.ops.LESS:
             case c.ops.GREATER:
-            case c.ops.DOT:
             case c.ops.AND:
             case c.ops.OR:
             case c.ops.BYTESTART:
-            case c.ops.COLON:
+            case c.ops.COLON:                
                 type = c.operator;
                 value = char;
-                advance('std while (l.301)');
+                advance();
+                break;
+            case c.ops.DOT:
+                isDotAccess = true;
+                type = c.operator;
+                value = char;
+                advance();
                 break;
             case c.NL:
                 // Update line
@@ -252,7 +273,7 @@ function lexing(code) {
                 // Safe the newline token
                 value = c.NL;
                 type = c.newline;
-                advance('std while (l.307)');
+                advance();
                 break;
             case c.ops.DIVIDE:
                 genCommentOrDivide();
@@ -268,7 +289,7 @@ function lexing(code) {
             case c.codeStructure.comma:
                 type = c.textelement;
                 value = char;
-                advance('std while (l.324)');
+                advance();
                 break;
             case c.ops.QUOTE:
                 genString();
@@ -280,7 +301,7 @@ function lexing(code) {
             case ' ':
                 type = c.whitespace;
                 value = '';
-                advance('std while');
+                advance();
                 break;
             case c.codeStructure.selected:
                 type = c.selectedChar;
@@ -454,7 +475,5 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Pfeiltasten: ArrowUp und ArrowDown Tasten implementieren.
-//
-// Ausnahmen: Dinge wie Strings oder dotaccess supporten, sodass diese eine andere Farbe haben!
 //
 /////////////////////////////////////////////////////////////////////////////////////////
