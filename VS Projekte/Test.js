@@ -437,10 +437,6 @@ init();
 // TODOs:
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-// Pfeiltasten: Wenn man mit den Pfeiltasten durch den Code scrollt verschiebt man die Buchstaben.
-//
-// Erster geschriebenes Zeichen: Das erste geschriebene Zeichen wird anerkannt, aber der cursor wird nicht geupdated.
-//
 // Pfeiltasten: ArrowUp und ArrowDown Tasten implementieren.
 //
 // Ausnahmen: Dinge wie Strings oder dotaccess supporten, sodass diese eine andere Farbe haben!
