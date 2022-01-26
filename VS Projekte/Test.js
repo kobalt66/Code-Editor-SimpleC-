@@ -9,6 +9,7 @@ var current_code = ' ';
 var final_code = '';
 const cPos = {
     idx : 0,
+    lnIdx : 1,
     'AltLeft' : false,
     'ShiftLeft' : false,
     fastShift : 5
@@ -81,6 +82,9 @@ function highlight_code(tokens) {
             case c.functionCall:
                 output += '#fce562">';
                 break;
+            case c.byteexpr:
+                output += '#81948e">';
+                break;
         }
         
         output += token.value;
@@ -88,7 +92,6 @@ function highlight_code(tokens) {
     });
     output += '</p>';
 
-    //lineData.forEach(l => console.log(l));
     var code = document.getElementById("output");
     code.innerHTML = output;
 }
@@ -96,6 +99,7 @@ function highlight_code(tokens) {
 function lexing(code) {
     // Reset data
     lineData = [];
+    allNewlines = [];
 
     // Generating tokenlist
     var ln = 0;
@@ -110,6 +114,7 @@ function lexing(code) {
 
     // Lexing cases
     var isDotAccess = false;
+    var isByte = false;
 
     // Functions
     const advance = (advFrom='std while') => {
@@ -138,15 +143,17 @@ function lexing(code) {
         type = c.metaKeywords.includes(str) ? c.metacode : type;
         type = c.types.includes(str) ? c.vartype : type;
         type = Number.isInteger(Number.parseInt(str)) ? c.number : type;
-
+        
         // Special cases
         if (type === c.identifier) {
-            if (isDotAccess) {
-                type = char === c.codeStructure.leftB ? c.functionCall : type;
-            }
+            type = char === c.codeStructure.leftB ? c.functionCall : type;
+        }
+        if (type === c.number) {
+            type = isByte ? c.byteexpr : type;
         }
         
         isDotAccess = false;
+        isByte = false;
         value = str;
     }
     const genCommentOrDivide = () => {
@@ -253,8 +260,7 @@ function lexing(code) {
             case c.ops.GREATER:
             case c.ops.AND:
             case c.ops.OR:
-            case c.ops.BYTESTART:
-            case c.ops.COLON:                
+            case c.ops.COLON:
                 type = c.operator;
                 value = char;
                 advance();
@@ -284,10 +290,16 @@ function lexing(code) {
             case c.codeStructure.rightSB:
             case c.codeStructure.leftB:
             case c.codeStructure.rightB:
-            case c.codeStructure.endcolumn:
             case c.codeStructure.hashtag:
+            case c.codeStructure.endcolumn:
             case c.codeStructure.comma:
                 type = c.textelement;
+                value = char;
+                advance();
+                break;
+            case c.ops.BYTESTART:
+                isByte = true;
+                type = c.operator;
                 value = char;
                 advance();
                 break;
@@ -325,6 +337,15 @@ function lexing(code) {
 }
 
 // Coding functions
+function getLineIdx() {
+    var beforeCursor = current_code.substring(0, cPos.idx);
+
+    var newlineCount = 1;
+    Array.from(beforeCursor).forEach(c => { if (c === '\n') newlineCount++});
+    
+    //console.log(newlineCount);
+    cPos.lnIdx = newlineCount;
+}
 function updateCursor(newIdx) {
     if (newIdx > 0) {
         if (cPos.idx + newIdx > current_code.length -1)
@@ -338,7 +359,8 @@ function updateCursor(newIdx) {
         else
             cPos.idx += newIdx;
     }
-    
+
+    getLineIdx();
     final_code = replaceAt(cPos.idx, '@');
 }
 function addCharTocode(char, idx=0) {
@@ -368,6 +390,7 @@ function replaceAt(idx, char) {
     else
         strArray[idx] = char;
 
+    cPos.moveDir = 0;
     var finalStr = '';
     strArray.forEach(c => finalStr += c);
     return finalStr;
@@ -392,6 +415,7 @@ function init() {
             case 'Enter':
                 addCharTocode('\n', cPos.idx);
                 updateCursor(1);
+                cPos.lnIdx++;
                 break;
             case 'Backspace':
                 if (cPos.ShiftLeft) {
@@ -455,6 +479,13 @@ function init() {
 
         updateCursor(0);
         lexing(final_code);
+
+        // Display lines
+        var str = '';
+        for (let i = 1; i < lineData.length + 1; i++)
+            str += i > 1 ? "\n" + i : i;
+
+        document.getElementById("lines").innerText = str;
     });
     document.addEventListener('keyup', function (e) {
         switch (e.code) {
@@ -475,5 +506,7 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Pfeiltasten: ArrowUp und ArrowDown Tasten implementieren.
+//
+// Automatisches einrücken implementieren.
 //
 /////////////////////////////////////////////////////////////////////////////////////////
