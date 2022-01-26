@@ -24,7 +24,7 @@ function genTok(idx, row, value, type) {
         type: type
     };
 }
-function genLine(ln, max_rowIdx) {
+function genLine(ln=0, max_rowIdx=0) {
     lineData.push({
         ln : ln,
         max_rowIdx : max_rowIdx
@@ -454,6 +454,18 @@ function init() {
                 else
                     updateCursor(1);
                 break;
+            case 'ArrowUp':
+                if (cPos.lnIdx > 1) {
+                    cPos.lnIdx--;
+                    cPos.idx -= lineData[cPos.lnIdx].max_rowIdx;
+                }
+                break;
+            case 'ArrowDown':
+                if (cPos.lnIdx < lineData.length) {
+                    cPos.lnIdx++;
+                    cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
+                }
+                break;
             default:
                 var char = c.getCharFromKeycode(e.code);
 
@@ -479,7 +491,8 @@ function init() {
 
         updateCursor(0);
         lexing(final_code);
-
+        
+        console.log(lineData.length);
         // Display lines
         var str = '';
         for (let i = 1; i < lineData.length + 1; i++)
@@ -504,8 +517,6 @@ init();
 
 // TODOs:
 /////////////////////////////////////////////////////////////////////////////////////////
-//
-// Pfeiltasten: ArrowUp und ArrowDown Tasten implementieren.
 //
 // Automatisches einrücken implementieren.
 //
