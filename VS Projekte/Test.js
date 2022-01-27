@@ -12,7 +12,10 @@ const cPos = {
     lnIdx : 1,
     'AltLeft' : false,
     'ShiftLeft' : false,
-    fastShift : 5
+    fastShift : 5,
+    clipboardStart : undefined,
+    clipboardEnd : undefined,
+    clipboardCode : ''
 }
 
 // Editor functions
@@ -360,8 +363,24 @@ function updateCursor(newIdx) {
             cPos.idx += newIdx;
     }
 
+    if (cPos.AltLeft && newIdx !== 0) {
+        if (cPos.clipboardStart === undefined)
+            cPos.clipboardStart = cPos.idx;
+        cPos.clipboardEnd = cPos.idx;
+
+        cPos.clipboardCode = current_code.substring(cPos.clipboardStart, cPos.clipboardEnd);
+    }
+    else if (!cPos.AltLeft && newIdx !== 0) {
+        cPos.clipboardStart = undefined;
+        cPos.clipboardEnd = undefined;
+        cPos.clipboardCode = '';
+    }
+
     getLineIdx();
-    final_code = replaceAt(cPos.idx, '@');
+    final_code = replaceAt(cPos.idx, '@', [
+        genReplacement('"', cPos.clipboardStart),
+        genReplacement('"', cPos.clipboardEnd)
+    ]);
 }
 function addCharTocode(char, idx=0) {
     var strArray = [];
@@ -383,12 +402,26 @@ function addCharTocode(char, idx=0) {
     current_code = finalStr;
     return;
 }
-function replaceAt(idx, char) {
+
+function genReplacement(replacement, atIdx) {
+    return {
+        replacement : replacement,
+        atIdx : atIdx
+    };
+}
+function replaceAt(idx, char, moreChanges=[]) {
     var strArray = Array.from(current_code);
     if (strArray[idx] === '\n')
         strArray[idx] = char + '\n';
     else
         strArray[idx] = char;
+
+    // More changes at once
+    if (moreChanges.length > 0) {
+        moreChanges.forEach(change => {
+            strArray[change.atIdx] = change.replacement;
+        });
+    }
 
     cPos.moveDir = 0;
     var finalStr = '';
@@ -405,7 +438,7 @@ function init() {
 
     // Key events
     document.addEventListener('keydown', function (e) {
-        console.log(e.code);
+        //console.log(e.code);
 
         switch (e.code) {
             case 'AltRight':
@@ -469,9 +502,20 @@ function init() {
                     cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
                 }
                 break;
+            case 'KeyV':
+                if (cPos.AltLeft) {
+                    setTimeout(async () => {
+                        const text = await navigator.clipboard.readText();
+                        addCharTocode(text, cPos.idx);
+                        cPos.idx += text.length -1;
+                      }, 2000);
+                }
+                break;
             case 'KeyC':
-                if (cPos.ShiftLeft)
-                    
+                if (cPos.AltLeft) {
+                    navigator.clipboard.writeText(cPos.clipboardCode);
+                    console.log(cPos.clipboardCode);
+                }
                 break;
             default:
                 var char = c.getCharFromKeycode(e.code);
@@ -496,7 +540,7 @@ function init() {
                 break;
         }
 
-        updateCursor(0);
+        updateCursor(0, true);
         lexing(final_code);
         
         // Display lines
@@ -528,5 +572,7 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Automatisches einrücken implementieren.
+//
+// Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
 /////////////////////////////////////////////////////////////////////////////////////////
