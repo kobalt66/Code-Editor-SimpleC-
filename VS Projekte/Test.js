@@ -370,8 +370,18 @@ function updateCursor(newIdx, typeing=true) {
             }
             cPos.clipboardEnd = cPos.idx + newIdx;
     
-            var start = newIdx > 0 ? cPos.clipboardStart : cPos.clipboardStart + 1;
-            var end = newIdx > 0 ? cPos.clipboardEnd + 1 : cPos.clipboardEnd;
+            var start = 0;
+            if (newIdx > 0) {
+                start = cPos.clipboardStart;
+                end = cPos.clipboardEnd + 1;
+            }
+            else {
+                start = cPos.clipboardStart + 1;
+                end = cPos.clipboardEnd;
+            }
+    
+            if (cPos.idx === 0) start = 0;
+
             cPos.clipboardCode = current_code.substring(start, end);
         }
         else if (!cPos.AltLeft && newIdx !== 0) {
@@ -572,7 +582,6 @@ function getCode() {
 }
 
 init();
-
 
 // TODOs:
 /////////////////////////////////////////////////////////////////////////////////////////
