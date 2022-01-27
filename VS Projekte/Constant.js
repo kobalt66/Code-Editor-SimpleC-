@@ -14,6 +14,7 @@ const newline = 'newline';
 const whitespace = 'whitespace';
 const selectedChar = 'selectedChar';
 
+
 // Predefined token values
 // Keywords
 const keywords = [
@@ -293,7 +294,7 @@ module.exports = {
     identifier : identifier,
     byteexpr : byteexpr,
     functionCall : functionCall, 
-    textelement : textelement, 
+    textelement : textelement,
     text : text, 
     number : number, 
     comment : comment, 
