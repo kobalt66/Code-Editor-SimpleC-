@@ -14,17 +14,29 @@
     </head>
     <header>
         <h1>Code Editor</h1>
-        <!--input id="getCode" name="getCode" type="button" onclick="console.log(getCode())" value="Get Code"/-->
+        <ul>
+            <li><input type="button" value="Test.sc"/></li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+        </ul>
     </header>
     <body>
-        <div class="line_nums"><p id="lines" name="lines">1</p></div>
-        <div class="editor" output="output" id="output"></div>
+        <div class="Editor">
+            <div class="line_nums"><p id="lines" name="lines">1</p></div>
+            <div class="code_editor" output="output" id="output"></div>
+        </div>
     </body>
 </html>
 
 <!--
 #import <stdlib>
 #define GLOBAL_STR "SimpleC test!"
+
 namespace m_nameSpace
 {
     public static class TestClass 
