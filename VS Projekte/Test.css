@@ -2,29 +2,46 @@ body {
     text-align: center;
 }
 
-.line_nums, .editor {
+.Editor {
+    margin: 100px 0px 0px 120px;
+}
+
+.line_nums, .code_editor {
+    z-index: 0;
     display: inline-block;
-    vertical-align: middle;
+    vertical-align:top;
 }
 
 .line_nums {
     width: 5%;
     position: static;
+    background-color: #313131;
 }
-.editor {
-    width: 90%;
+.code_editor {
+    width: 70%;
+    background-color: #2b2b2b;
+}
+
+ul {
+    width: 9%;
+    max-width: 9%;
+    text-align: left;
+    border:chartreuse solid 1px;
+    display: grid;
+    position:fixed;
+    margin-top: 120px;
 }
 
 h1 {
     font-family: 'Montserrat';
     width: 20%;
-    position: static;
     border: 5px dotted rgb(255, 207, 207) ;
     color:rgb(235, 235, 235);
 }
 
 header {
-    align-content: center;
+    position:absolute;
+    z-index: 1;
 }
 
 p {
@@ -34,7 +51,6 @@ p {
     margin: auto;
     flex: 1;
     position: relative;
-    background-color: #2b2b2b;
     outline: none;
     font-family: 'Overpass Mono', monospace;
     font-size: 20px;
