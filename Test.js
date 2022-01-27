@@ -370,18 +370,8 @@ function updateCursor(newIdx, typeing=true) {
             }
             cPos.clipboardEnd = cPos.idx + newIdx;
     
-            var start = 0;
-            if (newIdx > 0) {
-                start = cPos.clipboardStart;
-                end = cPos.clipboardEnd + 1;
-            }
-            else {
-                start = cPos.clipboardStart + 1;
-                end = cPos.clipboardEnd;
-            }
-    
-            if (cPos.idx === 0) start = 0;
-
+            var start = newIdx > 0 ? cPos.clipboardStart : cPos.clipboardStart + 1;
+            var end = newIdx > 0 ? cPos.clipboardEnd + 1 : cPos.clipboardEnd;
             cPos.clipboardCode = current_code.substring(start, end);
         }
         else if (!cPos.AltLeft && newIdx !== 0) {
@@ -508,13 +498,13 @@ function init() {
             case 'ArrowUp':
                 if (cPos.lnIdx > 1) {
                     cPos.lnIdx--;
-                    updateCursor(lineData[cPos.lnIdx].max_rowIdx, false)
+                    cPos.idx -= lineData[cPos.lnIdx].max_rowIdx;
                 }
                 break;
             case 'ArrowDown':
                 if (cPos.lnIdx < lineData.length) {
                     cPos.lnIdx++;
-                    updateCursor(lineData[cPos.lnIdx - 1].max_rowIdx, false);
+                    cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
                 }
                 break;
             case 'KeyV':
