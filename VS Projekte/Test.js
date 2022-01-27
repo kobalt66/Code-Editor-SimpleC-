@@ -364,9 +364,10 @@ function updateCursor(newIdx) {
     }
 
     if (cPos.AltLeft && newIdx !== 0) {
-        if (cPos.clipboardStart === undefined)
-            cPos.clipboardStart = cPos.idx;
-        cPos.clipboardEnd = cPos.idx;
+        if (cPos.clipboardStart === undefined) {
+            cPos.clipboardStart = cPos.idx - newIdx;
+        }
+        cPos.clipboardEnd = cPos.idx + newIdx;
 
         cPos.clipboardCode = current_code.substring(cPos.clipboardStart, cPos.clipboardEnd);
     }
@@ -507,14 +508,14 @@ function init() {
                     setTimeout(async () => {
                         const text = await navigator.clipboard.readText();
                         addCharTocode(text, cPos.idx);
-                        cPos.idx += text.length -1;
+                        cPos.idx += text.length;
                       }, 2000);
                 }
                 break;
             case 'KeyC':
                 if (cPos.AltLeft) {
                     navigator.clipboard.writeText(cPos.clipboardCode);
-                    console.log(cPos.clipboardCode);
+                    //console.log(cPos.clipboardCode);
                 }
                 break;
             default:
