@@ -349,7 +349,7 @@ function getLineIdx() {
     //console.log(newlineCount);
     cPos.lnIdx = newlineCount;
 }
-function updateCursor(newIdx) {
+function updateCursor(newIdx, typeing=true) {
     if (newIdx > 0) {
         if (cPos.idx + newIdx > current_code.length -1)
             cPos.idx = current_code.length - 1;
@@ -363,18 +363,22 @@ function updateCursor(newIdx) {
             cPos.idx += newIdx;
     }
 
-    if (cPos.AltLeft && newIdx !== 0) {
-        if (cPos.clipboardStart === undefined) {
-            cPos.clipboardStart = cPos.idx - newIdx;
+    if (!typeing) {
+        if (cPos.AltLeft && newIdx !== 0) {
+            if (cPos.clipboardStart === undefined) {
+                cPos.clipboardStart = cPos.idx - newIdx;
+            }
+            cPos.clipboardEnd = cPos.idx + newIdx;
+    
+            var start = newIdx > 0 ? cPos.clipboardStart : cPos.clipboardStart + 1;
+            var end = newIdx > 0 ? cPos.clipboardEnd + 1 : cPos.clipboardEnd;
+            cPos.clipboardCode = current_code.substring(start, end);
         }
-        cPos.clipboardEnd = cPos.idx + newIdx;
-
-        cPos.clipboardCode = current_code.substring(cPos.clipboardStart, cPos.clipboardEnd);
-    }
-    else if (!cPos.AltLeft && newIdx !== 0) {
-        cPos.clipboardStart = undefined;
-        cPos.clipboardEnd = undefined;
-        cPos.clipboardCode = '';
+        else if (!cPos.AltLeft && newIdx !== 0) {
+            cPos.clipboardStart = undefined;
+            cPos.clipboardEnd = undefined;
+            cPos.clipboardCode = '';
+        }
     }
 
     getLineIdx();
@@ -481,26 +485,26 @@ function init() {
                 break;
             case 'ArrowLeft':
                 if (cPos.ShiftLeft)
-                    updateCursor(-cPos.fastShift);
+                    updateCursor(-cPos.fastShift, false);
                 else
-                    updateCursor(-1);
+                    updateCursor(-1, false);
                 break;
             case 'ArrowRight':
                 if (cPos.ShiftLeft)
-                    updateCursor(cPos.fastShift);
+                    updateCursor(cPos.fastShift, false);
                 else
-                    updateCursor(1);
+                    updateCursor(1, false);
                 break;
             case 'ArrowUp':
                 if (cPos.lnIdx > 1) {
                     cPos.lnIdx--;
-                    cPos.idx -= lineData[cPos.lnIdx].max_rowIdx;
+                    updateCursor(lineData[cPos.lnIdx].max_rowIdx, false)
                 }
                 break;
             case 'ArrowDown':
                 if (cPos.lnIdx < lineData.length) {
                     cPos.lnIdx++;
-                    cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
+                    updateCursor(lineData[cPos.lnIdx - 1].max_rowIdx, false);
                 }
                 break;
             case 'KeyV':
@@ -541,7 +545,7 @@ function init() {
                 break;
         }
 
-        updateCursor(0, true);
+        updateCursor(0, false);
         lexing(final_code);
         
         // Display lines
