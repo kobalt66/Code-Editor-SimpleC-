@@ -1,0 +1,52 @@
+body {
+    text-align: center;
+}
+
+.line_nums, .editor {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.line_nums {
+    width: 5%;
+    position: static;
+}
+.editor {
+    width: 90%;
+}
+
+h1 {
+    font-family: 'Montserrat';
+    width: 20%;
+    position: static;
+    border: 5px dotted rgb(255, 207, 207) ;
+    color:rgb(235, 235, 235);
+}
+
+header {
+    align-content: center;
+}
+
+p {
+    width: 100%;
+    min-height: 600px;
+    overflow: visible;
+    margin: auto;
+    flex: 1;
+    position: relative;
+    background-color: #2b2b2b;
+    outline: none;
+    font-family: 'Overpass Mono', monospace;
+    font-size: 20px;
+    color: rgb(219, 219, 219);
+}
+
+div {
+    text-align: left;
+    background-color: #2b2b2b;
+    min-height: 600px;
+}
+
+html {
+    background-color: #383737;
+}
