@@ -21,11 +21,8 @@ h1 {
 p {
     width: 100%;
     min-height: 65vh;
-    max-height: 65vh;
-    overflow: visible;
     margin: auto;
     flex: 1;
-    position: relative;
     outline: none;
     font-family: 'Overpass Mono', monospace;
     font-size: 20px;
@@ -48,12 +45,13 @@ ul {
 
 .Editor {
     overflow-y: scroll;
-    max-height: 65vh;
     width: 89vw;
+    max-width: 92%;
+    max-height: 65vh;
     display: inline-block;
 }
 
-.line_nums, .code_editor, file_viewer {
+.line_nums, .code_editor, .file_viewer {
     z-index: 0;
     display: inline-block;
     vertical-align:top;
@@ -61,6 +59,7 @@ ul {
 
 .line_nums {
     width: 3%;
+    height: auto;
     position: static;
     background-color: #313131;
 }
