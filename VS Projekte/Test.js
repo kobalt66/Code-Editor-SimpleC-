@@ -47,32 +47,32 @@ function highlight_code(tokens) {
 
         switch (token.type) {
             case c.operator:
-                output += '#bffaa0;">';
+                output += '#bffaa0; text-shadow: 0 0 5px #bffaa0; #C8C8C8;">';
                 break;
             case c.keyword:
-                output += '#faa0ec;">';
+                output += '#faa0ec; text-shadow: 0 0 5px #faa0ec;">';
                 break;
             case c.metacode:
-                output += '#ac77ed">';
+                output += '#ac77ed; text-shadow: 0 0 5px #ac77ed;">';
                 break;
             case c.vartype:
-                output += '#91abff;">';
+                output += '#91abff; text-shadow: 0 0 5px #91abff;">';
                 break;
             case c.identifier:
-                output += '#72ceed;">';
+                output += '#72ceed; text-shadow: 0 0 5px #72ceed;">';
                 break;
             case c.textelement:
-                output += '#dbdbdb;">';
+                output += '#dbdbdb; text-shadow: 0 0 5px #dbdbdb;">';
                 break;
             case c.text:
-                output += '#f0c141;">';
+                output += '#f0c141; text-shadow: 0 0 5px #f0c141;">';
                 break;
             case c.number:
-                output += '#ffde85;">';
+                output += '#ffde85; text-shadow: 0 0 5px #ffde85;">';
                 break;
             case c.comment:
                 token.value = token.value.replace(/\n/i, '<br>');
-                output += '#507a43;">';
+                output += '#507a43; text-shadow: 0 0 5px #507a43;">';
                 break;
             case c.whitespace:
                 output += '&nbsp;';
@@ -81,13 +81,13 @@ function highlight_code(tokens) {
                 output += '<br>';
                 break;
             case c.selectedChar:
-                output += '#eb4034">'
+                output += '#eb4034; text-shadow: 0 0 5px #eb4034;">'
                 break;
             case c.functionCall:
-                output += '#fce562">';
+                output += '#fce562; text-shadow: 0 0 5px #fce562;">';
                 break;
             case c.byteexpr:
-                output += '#81948e">';
+                output += '#81948e; text-shadow: 0 0 5px #81948e;">';
                 break;
         }
         
