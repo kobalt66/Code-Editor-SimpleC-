@@ -15,7 +15,8 @@ const cPos = {
     fastShift : 5,
     clipboardStart : undefined,
     clipboardEnd : undefined,
-    clipboardCode : ''
+    clipboardCode : '',
+    allowedToType : true
 }
 
 // Editor functions
@@ -444,6 +445,12 @@ function init() {
     // Key events
     document.addEventListener('keydown', function (e) {
         //console.log(e.code);
+        if (e.code === 'Escape') {
+            cPos.allowedToType = !cPos.allowedToType;
+            console.log(cPos.allowedToType);
+        }
+
+        if (!cPos.allowedToType) return;
 
         switch (e.code) {
             case 'AltRight':
@@ -556,12 +563,17 @@ function init() {
         document.getElementById("lines").innerText = str;
     });
     document.addEventListener('keyup', function (e) {
+        if (!cPos.allowedToType) return;
+        
         switch (e.code) {
             case 'AltRight':
             case 'AltLeft':
             case 'ShiftRight':
             case 'ShiftLeft':
+            case 'ControlLeft':
+            case 'ControlRight':
                 var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
+                var keycode = e.code.includes('Control') ? e.code.replace('Control', 'Shift') : e.code;
                 cPos[keycode] = false;
                 break;
         }
