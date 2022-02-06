@@ -1,22 +1,41 @@
-const { comment, identifier } = require("./Constant.js");
-var c = require("./Constant.js");
-console.log(c);
+const c = require("./Constant.js");
+
 String.prototype.removeAt = c.removeAt;
 
 // Editor data
 var lineData = [];
 var current_code = ' ';
 var final_code = '';
+var clipboard = '';
+
+var terminal_input = null;
+var terminal_output = null;
 const cPos = {
-    idx : 0,
-    lnIdx : 1,
-    'AltLeft' : false,
-    'ShiftLeft' : false,
-    fastShift : 5,
-    clipboardStart : undefined,
-    clipboardEnd : undefined,
-    clipboardCode : '',
-    allowedToType : true
+    idx: 0,
+    lnIdx: 1,
+    'AltLeft': false,
+    'ShiftLeft': false,
+    'Control': false,
+    fastShift: 5,
+    clipboardStart: undefined,
+    clipboardEnd: undefined,
+    clipboardCode: '',
+    allowedToType: false
+}
+
+// Send request to server
+const CurlPythonServer = async (code) => {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", c.server);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            console.log(xhr.status);
+            console.log(xhr.responseText);
+        }
+    };
+
+    xhr.send(JSON.stringify(code));
 }
 
 // Editor functions
@@ -28,10 +47,10 @@ function genTok(idx, row, value, type) {
         type: type
     };
 }
-function genLine(ln=0, max_rowIdx=0) {
+function genLine(ln = 0, max_rowIdx = 0) {
     lineData.push({
-        ln : ln,
-        max_rowIdx : max_rowIdx
+        ln: ln,
+        max_rowIdx: max_rowIdx
     });
 }
 
@@ -90,7 +109,7 @@ function highlight_code(tokens) {
                 output += '#81948e; text-shadow: 0 0 5px #81948e;">';
                 break;
         }
-        
+
         output += token.value;
         output += '</span>';
     });
@@ -121,7 +140,7 @@ function lexing(code) {
     var isByte = false;
 
     // Functions
-    const advance = (advFrom='std while') => {
+    const advance = (advFrom = 'std while') => {
         if (idx + 1 < code.length) {
             idx++;
             row++;
@@ -129,7 +148,7 @@ function lexing(code) {
         }
         else
             char = c.EOF;
-          
+
         //console.log(char + " : Advace from '" + advFrom + "'");
         return char;
     }
@@ -147,7 +166,7 @@ function lexing(code) {
         type = c.metaKeywords.includes(str) ? c.metacode : type;
         type = c.types.includes(str) ? c.vartype : type;
         type = Number.isInteger(Number.parseInt(str)) ? c.number : type;
-        
+
         // Special cases
         if (type === c.identifier) {
             type = char === c.codeStructure.leftB ? c.functionCall : type;
@@ -155,7 +174,7 @@ function lexing(code) {
         if (type === c.number) {
             type = isByte ? c.byteexpr : type;
         }
-        
+
         isDotAccess = false;
         isByte = false;
         value = str;
@@ -196,13 +215,13 @@ function lexing(code) {
                     str += "<br>";
                 else
                     str += char;
-                
+
                 advance();
             }
 
             type = c.comment;
         }
-        
+
         value = str;
     }
     const genString = () => {
@@ -226,13 +245,13 @@ function lexing(code) {
             str += char;
             advance();
         }
-    
+
         type = c.text;
         value = str;
     }
     const genChar = () => {
         var str = char;
-        
+
         advance();
         str += char;
         advance();
@@ -335,7 +354,7 @@ function lexing(code) {
         else
             lineData[ln].max_rowIdx = row;
     }
-    
+
     tokens.shift();
     highlight_code(tokens);
 }
@@ -345,14 +364,14 @@ function getLineIdx() {
     var beforeCursor = current_code.substring(0, cPos.idx);
 
     var newlineCount = 1;
-    Array.from(beforeCursor).forEach(c => { if (c === '\n') newlineCount++});
-    
+    Array.from(beforeCursor).forEach(c => { if (c === '\n') newlineCount++ });
+
     //console.log(newlineCount);
     cPos.lnIdx = newlineCount;
 }
-function updateCursor(newIdx, typeing=true) {
+function updateCursor(newIdx, typeing = true) {
     if (newIdx > 0) {
-        if (cPos.idx + newIdx > current_code.length -1)
+        if (cPos.idx + newIdx > current_code.length - 1)
             cPos.idx = current_code.length - 1;
         else
             cPos.idx += newIdx;
@@ -365,17 +384,17 @@ function updateCursor(newIdx, typeing=true) {
     }
 
     if (!typeing) {
-        if (cPos.AltLeft && newIdx !== 0) {
+        if (cPos.Control && newIdx !== 0) {
             if (cPos.clipboardStart === undefined) {
                 cPos.clipboardStart = cPos.idx - newIdx;
             }
             cPos.clipboardEnd = cPos.idx + newIdx;
-    
+
             var start = newIdx > 0 ? cPos.clipboardStart : cPos.clipboardStart + 1;
             var end = newIdx > 0 ? cPos.clipboardEnd + 1 : cPos.clipboardEnd;
             cPos.clipboardCode = current_code.substring(start, end);
         }
-        else if (!cPos.AltLeft && newIdx !== 0) {
+        else if (!cPos.Control && newIdx !== 0) {
             cPos.clipboardStart = undefined;
             cPos.clipboardEnd = undefined;
             cPos.clipboardCode = '';
@@ -388,7 +407,7 @@ function updateCursor(newIdx, typeing=true) {
         genReplacement('"', cPos.clipboardEnd)
     ]);
 }
-function addCharTocode(char, idx=0) {
+function addCharTocode(char, idx = 0) {
     var strArray = [];
     var finalStr = '';
     strArray = Array.from(current_code);
@@ -397,7 +416,7 @@ function addCharTocode(char, idx=0) {
         current_code = char;
         return;
     }
-    
+
     for (let i = 0; i < strArray.length; i++) {
         if (i === idx)
             finalStr += char;
@@ -411,11 +430,11 @@ function addCharTocode(char, idx=0) {
 
 function genReplacement(replacement, atIdx) {
     return {
-        replacement : replacement,
-        atIdx : atIdx
+        replacement: replacement,
+        atIdx: atIdx
     };
 }
-function replaceAt(idx, char, moreChanges=[]) {
+function replaceAt(idx, char, moreChanges = []) {
     var strArray = Array.from(current_code);
     if (strArray[idx] === '\n')
         strArray[idx] = char + '\n';
@@ -435,29 +454,92 @@ function replaceAt(idx, char, moreChanges=[]) {
     return finalStr;
 }
 
+function throwError(msg) {
+    terminal_output.innerHTML += `<br><span style="color: #eb4034; text-shadow: 0 0 5px #eb4034;">Error:<br>   ${msg}</span><br>`;
+}
+function unique_info(msg) {
+    terminal_output.innerHTML += `<br><span style="color: #8035e8; text-shadow: 0 0 5px #8035e8;">${msg}</span>`;
+}
+function info(msg) {
+    terminal_output.innerHTML += `<br><span style="color: #e6dabc; text-shadow: 0 0 5px #e6dabc;">${msg}</span>`;
+}
+function processTerminal(code) {
+    info(code);
+    terminal_input.value = '';
+
+    // Spllitting command
+    var items = code.split(' '); 
+
+    // Checking grammar
+    if (!c.commands.includes(items[0])) {
+        throwError(`The command token '${items[0]}' is not valid!`);
+        return;
+    }
+    
+    // Excute commands
+    const Args = (args) => {
+        var returnVal = '';
+        for (let i = 1; i < args.length; i++) {
+            switch (args[i]) {
+                case '-d':
+                    info("Loading code");
+                    for (let j = i + 1; j < args.length; j++)
+                        returnVal += args[j] + ' ';
+
+                    current_code = returnVal + ' ';
+                    updateCursor(0, false);
+                    lexing(final_code);
+                    return;
+            }
+        }
+    };
+
+    switch (items[0]) {
+        case 'load':
+            Args(items);
+            break;
+        case 'compile':
+            break;
+    }
+
+}
+
 // Initializing code
 function init() {
     console.log("Called init function.");
-    
+
     // Set up document
     window.getCode = getCode;
 
     // Key events
     document.addEventListener('keydown', function (e) {
+        terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
+        terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
+
         //console.log(e.code);
         if (e.code === 'Escape') {
             cPos.allowedToType = !cPos.allowedToType;
-            console.log(cPos.allowedToType);
+            unique_info("Allow typing: " + cPos.allowedToType);
+        }
+        if (e.code === 'Enter' && !cPos.allowedToType) {
+            terminal_input.value = terminal_input.value.replace('\n', '');
+            var terminalText = terminal_input.value;
+
+            if (['', '\n', ' '].includes(terminalText)) return;
+            processTerminal(terminalText);
         }
 
-        if (!cPos.allowedToType) return;
+        if (!cPos.allowedToType && !cPos.Control) return;
 
         switch (e.code) {
             case 'AltRight':
             case 'AltLeft':
+            case 'ControlLeft':
+            case 'ControlRight':
             case 'ShiftRight':
             case 'ShiftLeft':
                 var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
+                keycode = e.code.includes('Control') ? 'Control' : e.code;
                 cPos[keycode] = true;
                 break;
             case 'Enter':
@@ -474,7 +556,7 @@ function init() {
                     }
                     break;
                 }
-                if (cPos.idx -1 >= 0) {
+                if (cPos.idx - 1 >= 0) {
                     current_code = current_code.removeAt(cPos.idx - 1);
                     updateCursor(-1);
                 }
@@ -514,25 +596,20 @@ function init() {
                     cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
                 }
                 break;
-            case 'KeyV':
+            case 'KeyS':
                 if (cPos.AltLeft) {
-                    setTimeout(async () => {
-                        const text = await navigator.clipboard.readText();
-                        addCharTocode(text, cPos.idx);
-                        cPos.idx += text.length;
-                    }, 2000);
-                    break;
-                }
-            case 'KeyC':
-                if (cPos.AltLeft) {
-                    navigator.clipboard.writeText(cPos.clipboardCode);
-                    //console.log(cPos.clipboardCode);
-                    break;
+                    // Send that request:
+                    const code = {
+                        code: getCode()
+                    };
+
+                    console.log(`Curl on ${c.server}`);
+                    CurlPythonServer(code);
                 }
             default:
                 var char = c.getCharFromKeycode(e.code);
 
-                if (!char) break;
+                if (!char || cPos.Control) break;
 
                 if (cPos.AltLeft) {
                     if (c.altChars.hasOwnProperty(char))
@@ -554,7 +631,7 @@ function init() {
 
         updateCursor(0, false);
         lexing(final_code);
-        
+
         // Display lines
         var str = '';
         for (let i = 1; i < lineData.length + 1; i++)
@@ -562,9 +639,23 @@ function init() {
 
         document.getElementById("lines").innerText = str;
     });
-    document.addEventListener('keyup', function (e) {
+    document.addEventListener('copy', (e) => {
         if (!cPos.allowedToType) return;
         
+        info("Copied to clipboard...");
+        clipboard = cPos.clipboardCode;
+    });
+    document.addEventListener('paste', (e) => {
+        if (!cPos.allowedToType) return;
+
+        const text = clipboard;
+        info("Pasted text. Press any button...");
+        addCharTocode(text, cPos.idx);
+        cPos.idx += text.length;
+    });
+    document.addEventListener('keyup', function (e) {
+        if (!cPos.allowedToType) return;
+
         switch (e.code) {
             case 'AltRight':
             case 'AltLeft':
@@ -573,7 +664,7 @@ function init() {
             case 'ControlLeft':
             case 'ControlRight':
                 var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
-                var keycode = e.code.includes('Control') ? e.code.replace('Control', 'Shift') : e.code;
+                keycode = e.code.includes('Control') ? 'Control' : e.code;
                 cPos[keycode] = false;
                 break;
         }
@@ -592,4 +683,27 @@ init();
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
+// Server test in cmd > curl http://192.168.178.58:8008 -X POST --data "{\"code\":\"private var a = 123;\"}"
+//
 /////////////////////////////////////////////////////////////////////////////////////////
+
+
+/* COMMANDS
+
+    [command_token] [options] [value]
+        load           -d       text
+    loading command  raw data  string
+
+Command_tokens:
+
+- load      (loading value as the script)
+- compile   (same as > Alt + S)
+
+Command_options:
+
+-d (raw data)
+-j (json foramt)
+-a (address)
+-p (print result)
+
+*/
