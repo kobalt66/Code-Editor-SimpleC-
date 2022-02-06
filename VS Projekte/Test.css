@@ -86,20 +86,23 @@ ul {
     font-family: 'Overpass Mono', monospace;
 }
 
-textarea {
-background-color: rgb(51, 51, 51);
-margin: 0;
-min-height: 19vh;
-max-height: 19vh;
-min-width: 96%;
-max-width: 96%;
-overflow: hidden;
-padding: 2rem;
-color: white;
-font: 1.3rem Inconsolata, monospace;
-text-shadow: 0 0 5px #C8C8C8;
+.terminal_output {
+    background-color: rgb(51, 51, 51);
+    margin: 0;
+    min-height: 17vh;
+    max-height: 17vh;
+    min-width: 96%;
+    max-width: 96%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 2rem;
+    color: white;
+    font: 1.3rem Inconsolata, monospace;
+    text-shadow: 0 0 5px #C8C8C8;
+    font-size: 15px;
+    align-self: flex-start;
 }
-textarea::after {
+.terminal_ouput::after {
   content: "";
   position: absolute;
   top: 0;
@@ -114,10 +117,39 @@ textarea::after {
   );
   pointer-events: none;
 }
+
+.terminal_input {
+    background-color: rgb(51, 51, 51);
+    margin: 0;
+    min-height: 2vh;
+    max-height: 2vh;
+    min-width: 96%;
+    max-width: 96%;
+    overflow: hidden;
+    color: white;
+    font: 1.3rem Inconsolata, monospace;
+    text-shadow: 0 0 5px #C8C8C8;
+    font-size: 15px;
+}
+textarea::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(black, 0.15),
+      rgba(black, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+  }
 textarea::selection {
-background: #0080FF;
-text-shadow: none;
+    background: #0080FF;
+    text-shadow: none;
 }
 pre {
-margin: 0;
+    margin: 0;
 }
