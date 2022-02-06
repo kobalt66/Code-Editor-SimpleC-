@@ -16,7 +16,7 @@
     <header>
         <h1>Code Editor</h1>
     </header>
-    <body>
+    <body onload="">
         <div class="editor_container">
             <div class="file_viewer">
                 <section>
@@ -33,9 +33,12 @@
             </div>
             <div class="Editor">
                 <div class="line_nums"><p id="lines" name="lines">1</p></div>
-                <div class="code_editor" output="output" id="output"></div>
+                <div class="code_editor" output="output" name="output" id="output"></div>
             </div>
-            <div class="terminal"><textarea>Test</textarea></div>
+            <div class="terminal" name="terminal" id="terminal">
+                <p class="terminal_output"id="terminal_output" name="terminal_output"></p>
+                <textarea class="terminal_input" id="terminal_input" name="terminal_input"></textarea>
+            </div>
         </div>
     </body>
 </html>
