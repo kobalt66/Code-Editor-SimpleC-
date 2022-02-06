@@ -156,6 +156,9 @@ const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const digits = '0123456789';
 const letters_digits = letters + digits;
 
+const server = "http://192.168.178.58:8008";
+const origin = "http://192.168.178.125:3000";
+
 // If the shift or alt key is pressed specific characters will output special characters.
 const shiftChars = {
     '1' : '!',
@@ -286,6 +289,18 @@ String.prototype.removeAt = function(idx) {
     return this.substring(0, idx) + this.substring(idx + 1);
 }
 
+// Terminal
+const commands = [
+    "compile",
+    "load"
+];
+const command_tokens = [
+    '-d',
+    '-j',
+    '-a',
+    '-p'
+];
+
 module.exports = {
     operator : operator, 
     keyword : keyword,
@@ -315,5 +330,9 @@ module.exports = {
     shiftChars : shiftChars,
     altChars : altChars,
     getCharFromKeycode : getCharFromKeycode,
-    removeAt : String.prototype.removeAt
+    removeAt : String.prototype.removeAt,
+    server : server,
+    origin : origin,
+    commands : commands,
+    command_tokens : command_tokens
 };
