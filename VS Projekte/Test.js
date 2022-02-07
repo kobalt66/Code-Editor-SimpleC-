@@ -24,9 +24,10 @@ const cPos = {
 }
 
 // Send request to server
-const CurlPythonServer = async (code) => {
+const CurlPythonServer = async (code, address=c.server) => {
+    unique_info(`Curl on ${address}`);
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", c.server);
+    xhr.open("POST", address);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -463,6 +464,9 @@ function unique_info(msg) {
 function info(msg) {
     terminal_output.innerHTML += `<br><span style="color: #e6dabc; text-shadow: 0 0 5px #e6dabc;">${msg}</span>`;
 }
+function printTxt(msg) {
+    terminal_output.innerHTML += `<br><span style="color: #8f8f8f; text-shadow: 0 0 5px #8f8f8f;">${msg}</span>`;
+}
 function processTerminal(code) {
     info(code);
     terminal_input.value = '';
@@ -479,6 +483,9 @@ function processTerminal(code) {
     // Excute commands
     const Args = (args) => {
         var returnVal = '';
+        var address = '';
+        var printRes = false;
+
         for (let i = 1; i < args.length; i++) {
             switch (args[i]) {
                 case '-d':
@@ -486,22 +493,73 @@ function processTerminal(code) {
                     for (let j = i + 1; j < args.length; j++)
                         returnVal += args[j] + ' ';
 
-                    current_code = returnVal + ' ';
-                    updateCursor(0, false);
-                    lexing(final_code);
-                    return;
+                    return {
+                        returnVal : returnVal,
+                        address : address,
+                        printRes : printRes
+                    };
+                case '-a':
+                    i++;
+                    address = args[i];
+                    console.log(address);
+                    break;
+                case '-this':
+                    returnVal = getCode();
+                    break;
+                case '-p':
+                    printRes = true;
+                    break;
             }
         }
+
+        return {
+            returnVal : returnVal,
+            address : address,
+            printRes : printRes
+        };
     };
 
+    var obj = null;
     switch (items[0]) {
         case 'load':
-            Args(items);
+            obj = Args(items);
+
+            current_code = obj.returnVal + ' ';
+            updateCursor(0, false);
+            lexing(final_code);
             break;
         case 'compile':
+            obj = Args(items);
+
+            if (!obj.address) {
+                throwError("Compile command needs an address token!");
+                return;
+            }
+            if (!obj.returnVal) {
+                throwError("Compile command needs a value to compile!");
+                return;
+            }
+            
+            const code = {
+                code : obj.returnVal
+            }
+            CurlPythonServer(code, obj.address);
+            break;
+        case 'log':
+            obj = Args(items);
+
+            if (!obj.returnVal) {
+                throwError("Log command needs a value to log!");
+                return;
+            }
+
+            if (obj.printRes) print(obj.returnVal);
+            console.log(obj.returnVal);
+
             break;
     }
 
+    if (obj.printRes) printTxt(obj.returnVal);
 }
 
 // Initializing code
@@ -603,7 +661,6 @@ function init() {
                         code: getCode()
                     };
 
-                    console.log(`Curl on ${c.server}`);
                     CurlPythonServer(code);
                 }
             default:
@@ -686,24 +743,3 @@ init();
 // Server test in cmd > curl http://192.168.178.58:8008 -X POST --data "{\"code\":\"private var a = 123;\"}"
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-
-
-/* COMMANDS
-
-    [command_token] [options] [value]
-        load           -d       text
-    loading command  raw data  string
-
-Command_tokens:
-
-- load      (loading value as the script)
-- compile   (same as > Alt + S)
-
-Command_options:
-
--d (raw data)
--j (json foramt)
--a (address)
--p (print result)
-
-*/
