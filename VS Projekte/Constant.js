@@ -292,13 +292,15 @@ String.prototype.removeAt = function(idx) {
 // Terminal
 const commands = [
     "compile",
-    "load"
+    "load",
+    "log"
 ];
 const command_tokens = [
     '-d',
     '-j',
     '-a',
-    '-p'
+    '-p',
+    '-this'
 ];
 
 module.exports = {
