@@ -553,9 +553,7 @@ function processTerminal(code) {
                 return;
             }
 
-            if (obj.printRes) print(obj.returnVal);
             console.log(obj.returnVal);
-
             break;
     }
 
