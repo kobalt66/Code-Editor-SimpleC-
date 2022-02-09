@@ -24,20 +24,40 @@ const cPos = {
 }
 
 // Send request to server
-const CurlPythonServer = async (code, address=c.server) => {
-    unique_info(`Curl on ${address}`);
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", address);
+const CurlPythonServer = async (code, address=c.server, func="POST") => {
+    unique_info(`[${func}] Curl on ${address}`);
 
-    xhr.onreadystatechange = function () {
+    if (func === "POST")  {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", address);
+    
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+                http(xhr.responseText);
+            }
+        };
+    
+        xhr.send(JSON.stringify(code));
+        http(xhr.responseText);
+    }
+    else if (func === "GET") {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", address);
+
+        xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             console.log(xhr.status);
             console.log(xhr.responseText);
-        }
-    };
+            http(xhr.responseText);
+        }};
 
-    xhr.send(JSON.stringify(code));
+        xhr.send();
+        http(xhr.responseText);
+    }
 }
+
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -467,6 +487,9 @@ function info(msg) {
 function printTxt(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8f8f8f; text-shadow: 0 0 5px #8f8f8f;">${msg}</span>`;
 }
+function http(msg) {
+    terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">${msg}</span>`;
+}
 function processTerminal(code) {
     info(code);
     terminal_input.value = '';
@@ -555,6 +578,9 @@ function processTerminal(code) {
 
             console.log(obj.returnVal);
             break;
+        case 'run':
+            CurlPythonServer(getCode(), c.server, 'GET');
+            return;
     }
 
     if (obj.printRes) printTxt(obj.returnVal);
@@ -741,3 +767,14 @@ init();
 // Server test in cmd > curl http://192.168.178.58:8008 -X POST --data "{\"code\":\"private var a = 123;\"}"
 //
 /////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+#lib = "custom_Lib"
+private str msg = "Secret Message!";
+
+public class Program {
+   static function void Main(str args) {
+      Console.WriteLine(msg);
+   }
+}
+*/
