@@ -18,13 +18,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers() 
             
             # Process data 
-            call(['mcs', 'output.cs']) 
-            result = run(['mono', 'output.exe'], stdout=PIPE) 
-            print('Sending data: ', result.stdout.decode('utf-8')) 
-            print("Success!") 
+            result = run(['mcs', 'output.cs'], stdout=PIPE, stderr=PIPE)
+            if not result.stderr == b'':
+                json = "{\"result\" : \"" + str(result.stdout.decode('utf-8')) + "\", \"result\" : \"" + str(result.stderr.decode('utf-8')) + "\"}" 
+                self.wfile.write(json.encode('utf-8'))
+                print("Success!")
+                return
             
-            json = "{\"result\" : \"" + str(result.stdout.decode('utf-8')) + "\"}" 
-            self.wfile.write(json.encode('utf-8')) 
+            result = run(['mono', 'output.exe'], stdout=PIPE, stderr=PIPE) 
+            json = "{\"result\" : \"" + str(result.stdout.decode('utf-8')) + "\", \"result\" : \"" + str(result.stderr.decode('utf-8')) + "\"}" 
+            self.wfile.write(json.encode('utf-8'))
+            print("Success!")
         
         except Exception as e: 
             self.wfile.write("[GET] Something went wrong while processing the data!".encode('utf-8'))
@@ -49,14 +53,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             code = loads(codeJSON)['code'] 
             result = runScript('js_test', code)
         
-            print(result) 
-            print("Success!") 
-        
             if result:
                 json = "{\"result\" : \"" + result + "\"}" 
                 self.wfile.write(json.encode('utf-8')) 
             else:
                 self.wfile.write("Successfully compiled the code!".encode('utf-8'))
+            print("Success!")
         
         except Exception as e: 
             self.wfile.write("[POST] Something went wrong while processing the data!".encode('utf-8'))
