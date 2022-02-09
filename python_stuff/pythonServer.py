@@ -52,8 +52,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             print(result) 
             print("Success!") 
         
-            json = "{\"result\" : \"" + result + "\"}" 
-            self.wfile.write(json.encode('utf-8')) 
+            if result:
+                json = "{\"result\" : \"" + result + "\"}" 
+                self.wfile.write(json.encode('utf-8')) 
+            else:
+                self.wfile.write("Successfully compiled the code!".encode('utf-8'))
         
         except Exception as e: 
             self.wfile.write("[POST] Something went wrong while processing the data!".encode('utf-8'))
