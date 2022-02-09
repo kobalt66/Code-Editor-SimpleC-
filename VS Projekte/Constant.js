@@ -293,7 +293,8 @@ String.prototype.removeAt = function(idx) {
 const commands = [
     "compile",
     "load",
-    "log"
+    "log",
+    "run"
 ];
 const command_tokens = [
     '-d',
