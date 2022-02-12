@@ -59,16 +59,15 @@ const test_fileViewer = {
     projects : {
         "project1" : {
             open : false,
-            files : {
-                "test.sc" : { path : "./test.sc" },
-                "test2.sc" : { path : "./test2.sc" }
-            }
+            files : [
+                "test.sc",
+                "test2.sc"
+            ]
         },
         "project2" : {
             open : false,
-            files : {
-    
-            }
+            files : [
+            ]
         }
     }
 };
@@ -82,22 +81,22 @@ function loadFiles() {
 
         if (currProject.open)
             for (let file in currProject.files)
-                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}, ${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
     }
 }
 function clickProject(project) {
     test_fileViewer.projects[project].open = !test_fileViewer.projects[project].open;
     loadFiles();
 }
-function clickScript(script) {
+function clickScript(project, script) {
     let request = new XMLHttpRequest();
 
-    request.open('GET', `${c.origin}/testProject/${script}`);
+    request.open('GET', `${c.origin}/Projects/${project}/${script}`);
     request.onload = () => {
         terminal_input.innerHTML = request.responseText;
         current_code = terminal_input.innerHTML + ' ';
         terminal_input.innerHTML = '';
-        
+
         updateCursor(0, false);
         lexing(final_code);
     };
