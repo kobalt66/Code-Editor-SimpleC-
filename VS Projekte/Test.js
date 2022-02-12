@@ -80,8 +80,8 @@ function loadFiles() {
         const currProject = test_fileViewer.projects[project];
 
         if (currProject.open)
-            for (let file in currProject.files)
-                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}, ${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+            for (let file of currProject.files)
+                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
     }
 }
 function clickProject(project) {
