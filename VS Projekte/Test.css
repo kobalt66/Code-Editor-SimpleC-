@@ -45,8 +45,8 @@ ul {
 
 .Editor {
     overflow-y: scroll;
-    width: 80vw;
-    max-width: 90%;
+    width: 84.25%;
+    max-width: 84.25%;
     max-height: 65vh;
     display: inline-block;
 }
