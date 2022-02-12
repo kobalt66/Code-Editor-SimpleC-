@@ -123,8 +123,8 @@ ul {
     margin: 0;
     min-height: 2vh;
     max-height: 2vh;
-    min-width: 96%;
-    max-width: 96%;
+    min-width: 99%;
+    max-width: 99%;
     overflow: hidden;
     color: white;
     font: 1.3rem Inconsolata, monospace;
