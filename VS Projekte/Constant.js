@@ -103,24 +103,24 @@ const BYTESTART = '$';
 const COLON = ':';
 
 const ops = {
-    PLUS : PLUS,
-    MINUS : MINUS,
-    DIVIDE : DIVIDE,
-    MULTIPLY : MULTIPLY,
-    MODULUS : MODULUS,
-    POWER : POWER,
-    ISEQUALTO : ISEQUALTO,
-    EQUALS : EQUALS,
-    NOT : NOT,
-    LESS : LESS,
-    GREATER : GREATER,
-    QUOTE : QUOTE,
-    SQUOTE : SQUOTE,
-    DOT : DOT,
-    OR : OR,
-    AND : AND,
-    BYTESTART : BYTESTART,
-    COLON : COLON
+    PLUS: PLUS,
+    MINUS: MINUS,
+    DIVIDE: DIVIDE,
+    MULTIPLY: MULTIPLY,
+    MODULUS: MODULUS,
+    POWER: POWER,
+    ISEQUALTO: ISEQUALTO,
+    EQUALS: EQUALS,
+    NOT: NOT,
+    LESS: LESS,
+    GREATER: GREATER,
+    QUOTE: QUOTE,
+    SQUOTE: SQUOTE,
+    DOT: DOT,
+    OR: OR,
+    AND: AND,
+    BYTESTART: BYTESTART,
+    COLON: COLON
 };
 
 // Code structure
@@ -136,16 +136,16 @@ const hashtag = '#';
 const selected = '@';
 
 const codeStructure = {
-    leftCB : leftCB,
-    rightCB : rightCB,
-    leftSB : leftSB,
-    rightSB : rightSB,
-    leftB : leftB,
-    rightB : rightB,
-    endcolumn : endcolumn,
-    comma : comma,
-    hashtag : hashtag,
-    selected : selected
+    leftCB: leftCB,
+    rightCB: rightCB,
+    leftSB: leftSB,
+    rightSB: rightSB,
+    leftB: leftB,
+    rightB: rightB,
+    endcolumn: endcolumn,
+    comma: comma,
+    hashtag: hashtag,
+    selected: selected
 };
 
 const NL = '\n';
@@ -161,29 +161,29 @@ const origin = "http://192.168.178.125:3000";
 
 // If the shift or alt key is pressed specific characters will output special characters.
 const shiftChars = {
-    '1' : '!',
-    '2' : '"',
-    '4' : '$',
-    '5' : '%',
-    '6' : '&',
-    '7' : '/',
-    '8' : '(',
-    '9' : ')',
-    '0' : '=',
-    '#' : '\'',
-    '+' : '*',
-    ',' : ';',
-    '.' : ':',
-    '-' : '_',
-    '<' : '>'
+    '1': '!',
+    '2': '"',
+    '4': '$',
+    '5': '%',
+    '6': '&',
+    '7': '/',
+    '8': '(',
+    '9': ')',
+    '0': '=',
+    '#': '\'',
+    '+': '*',
+    ',': ';',
+    '.': ':',
+    '-': '_',
+    '<': '>'
 }
 const altChars = {
-    '5' : '[',
-    '6' : ']',
-    '7' : '|',
-    '8' : '{',
-    '9' : '}',
-    'l' : '@'
+    '5': '[',
+    '6': ']',
+    '7': '|',
+    '8': '{',
+    '9': '}',
+    'l': '@'
 }
 
 // Functions
@@ -281,8 +281,7 @@ function getCharFromKeycode(code) {
             return ' ';
     }
 }
-
-String.prototype.removeAt = function(idx) {
+String.prototype.removeAt = function (idx) {
     if (idx >= this.length) {
         return this.valueOf();
     }
@@ -294,7 +293,8 @@ const commands = [
     "compile",
     "load",
     "log",
-    "run"
+    "run",
+    "clear"
 ];
 const command_tokens = [
     '-d',
@@ -305,37 +305,37 @@ const command_tokens = [
 ];
 
 module.exports = {
-    operator : operator, 
-    keyword : keyword,
-    metacode : metacode,
-    vartype : vartype, 
-    identifier : identifier,
-    byteexpr : byteexpr,
-    functionCall : functionCall, 
-    textelement : textelement,
-    text : text, 
-    number : number, 
-    comment : comment, 
-    newline : newline, 
-    whitespace : whitespace, 
-    keywords : keywords,
+    operator: operator,
+    keyword: keyword,
+    metacode: metacode,
+    vartype: vartype,
+    identifier: identifier,
+    byteexpr: byteexpr,
+    functionCall: functionCall,
+    textelement: textelement,
+    text: text,
+    number: number,
+    comment: comment,
+    newline: newline,
+    whitespace: whitespace,
+    keywords: keywords,
     metaKeywords: metaKeywords,
-    selectedChar : selectedChar,
-    types : types,
-    ops : ops,
-    codeStructure : codeStructure,
-    NL : NL,
-    TAB : TAB,
-    EOF : EOF,
-    letters : letters,
-    digits : digits,
-    letters_digits : letters_digits,
-    shiftChars : shiftChars,
-    altChars : altChars,
-    getCharFromKeycode : getCharFromKeycode,
-    removeAt : String.prototype.removeAt,
-    server : server,
-    origin : origin,
-    commands : commands,
-    command_tokens : command_tokens
+    selectedChar: selectedChar,
+    types: types,
+    ops: ops,
+    codeStructure: codeStructure,
+    NL: NL,
+    TAB: TAB,
+    EOF: EOF,
+    letters: letters,
+    digits: digits,
+    letters_digits: letters_digits,
+    shiftChars: shiftChars,
+    altChars: altChars,
+    getCharFromKeycode: getCharFromKeycode,
+    removeAt: String.prototype.removeAt,
+    server: server,
+    origin: origin,
+    commands: commands,
+    command_tokens: command_tokens
 };
