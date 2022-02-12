@@ -24,21 +24,18 @@ const cPos = {
 }
 
 // Send request to server
-const CurlPythonServer = async (code, address=c.server, func="POST") => {
+const CurlPythonServer = async (code, address = c.server, func = "POST") => {
     unique_info(`[${func}] Curl on ${address}`);
 
-    if (func === "POST")  {
+    if (func === "POST") {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", address);
-    
+
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                console.log(xhr.status);
-                console.log(xhr.responseText);
+            if (xhr.readyState === 4)
                 http(xhr.responseText);
-            }
         };
-    
+
         xhr.send(JSON.stringify(code));
         http(xhr.responseText);
     }
@@ -47,11 +44,9 @@ const CurlPythonServer = async (code, address=c.server, func="POST") => {
         xhr.open("GET", address);
 
         xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            console.log(xhr.status);
-            console.log(xhr.responseText);
-            http(xhr.responseText);
-        }};
+            if (xhr.readyState === 4)
+                http(xhr.responseText);
+        };
 
         xhr.send();
         http(xhr.responseText);
@@ -488,21 +483,36 @@ function printTxt(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8f8f8f; text-shadow: 0 0 5px #8f8f8f;">${msg}</span>`;
 }
 function http(msg) {
-    terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">${msg}</span>`;
+    if (!msg) return;
+    finalStr = msg.split('\n');
+
+    var maxLooptime = 1000;
+    var currLooptime = 0;
+    for (let res of finalStr) {
+        if (maxLooptime > currLooptime) {
+            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">${res}</span>`;
+        }
+        else {
+            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">... (${finalStr.length - 1001} more entries)</span>`;
+            break;
+        }
+
+        currLooptime++;
+    }
 }
 function processTerminal(code) {
     info(code);
     terminal_input.value = '';
 
     // Spllitting command
-    var items = code.split(' '); 
+    var items = code.split(' ');
 
     // Checking grammar
     if (!c.commands.includes(items[0])) {
         throwError(`The command token '${items[0]}' is not valid!`);
         return;
     }
-    
+
     // Excute commands
     const Args = (args) => {
         var returnVal = '';
@@ -517,9 +527,9 @@ function processTerminal(code) {
                         returnVal += args[j] + ' ';
 
                     return {
-                        returnVal : returnVal,
-                        address : address,
-                        printRes : printRes
+                        returnVal: returnVal,
+                        address: address,
+                        printRes: printRes
                     };
                 case '-a':
                     i++;
@@ -536,9 +546,9 @@ function processTerminal(code) {
         }
 
         return {
-            returnVal : returnVal,
-            address : address,
-            printRes : printRes
+            returnVal: returnVal,
+            address: address,
+            printRes: printRes
         };
     };
 
@@ -562,9 +572,9 @@ function processTerminal(code) {
                 throwError("Compile command needs a value to compile!");
                 return;
             }
-            
+
             const code = {
-                code : obj.returnVal
+                code: obj.returnVal
             }
             CurlPythonServer(code, obj.address);
             break;
@@ -580,6 +590,9 @@ function processTerminal(code) {
             break;
         case 'run':
             CurlPythonServer(getCode(), c.server, 'GET');
+            return;
+        case 'clear':
+            terminal_output.innerHTML = '';
             return;
     }
 
@@ -722,7 +735,7 @@ function init() {
     });
     document.addEventListener('copy', (e) => {
         if (!cPos.allowedToType) return;
-        
+
         info("Copied to clipboard...");
         clipboard = cPos.clipboardCode;
     });
@@ -764,7 +777,9 @@ init();
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
-// Server test in cmd > curl http://192.168.178.58:8008 -X POST --data "{\"code\":\"private var a = 123;\"}"
+// Error checking when compiling the script!
+//
+// ^ doesn't work in csharp!
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -777,4 +792,33 @@ public class Program {
       Console.WriteLine(msg);
    }
 }
+
+#define asdf "GLOBAL_STRING"
+
+public class Program {
+  static function void Main(str args) {
+     int idx = 0;  
+     while (true) {
+       idx++;
+       Console.WriteLine(idx);
+       if (idx ? 200)@return;  
+     }
+  }
+}
+
+public class Program {
+   static function void Main() {
+      
+   }
+}
+
+#define global_STR "GLOBAL STRING! (for libDEFAULTlib)"
+
+public class Program {
+   static function void Main() {
+      Console.WriteLine(1 + (2 / 3) * 5.2);
+      Console.WriteLine("Test logging!");
+      Console.WriteLine(global_STR);
+   }
+} 
 */
