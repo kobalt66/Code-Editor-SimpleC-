@@ -6,7 +6,7 @@
     <link href="Test.css" rel="stylesheet" />
     <link href="button.css" rel="stylesheet" />
     <script src="Constant.js" type="module"></script>
-    <script src="Test.js" type="module"></script>
+    <script src="Test.js"  type="module"></script>
 
     <link rel="icon" href="img/Logo.png">
     <title>Code Editor - SimpleC</title>
@@ -27,24 +27,10 @@
     <h1>Code Editor</h1>
 </header>
 
-<body onload="">
+<body onload="loadFiles()">
     <div class="editor_container">
         <div class="file_viewer">
-            <section id="file_viewer" name="file_viewer">
-                <button class="file folder" role="button"><img src="img/folder.png" style="width: 15px; height: 15px;">Project1</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
-            </section>
+            <section id="file_viewer" name="file_viewer"></section>
         </div>
         <div class="Editor">
             <div class="line_nums">
@@ -60,3 +46,24 @@
 </body>
 
 </html>
+
+<!--
+#import <stdlib>
+#define GLOBAL_STR "SimpleC test!"
+namespace m_nameSpace
+{
+    public static class TestClass 
+    {
+        private int A;
+        private int B;
+        constructor(int a, int b) {
+            A = a;
+            B = b;
+        }
+        public protected function void myFunc() 
+        {
+            console.print(GLOBAL_STR);
+        }
+    }
+}
+-->
