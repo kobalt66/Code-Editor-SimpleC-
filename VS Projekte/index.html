@@ -1,46 +1,64 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <link href="Test.css" rel="stylesheet"/>
-        <link href="button.css" rel="stylesheet"/>
-        <script src="output.js"></script>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital@0;1&family=Montserrat&family=Space+Mono&family=Work+Sans:ital,wght@0,500;0,800;1,400&display=swap" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono:wght@300&display=swap" rel="stylesheet">
-    </head>
-    <header>
-        <h1>Code Editor</h1>
-    </header>
-    <body onload="">
-        <div class="editor_container">
-            <div class="file_viewer">
-                <section>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                    <button class="button-81" role="button">Button 81</button>
-                </section>
-            </div>
-            <div class="Editor">
-                <div class="line_nums"><p id="lines" name="lines">1</p></div>
-                <div class="code_editor" output="output" name="output" id="output"></div>
-            </div>
-            <div class="terminal" name="terminal" id="terminal">
-                <p class="terminal_output"id="terminal_output" name="terminal_output"></p>
-                <textarea class="terminal_input" id="terminal_input" name="terminal_input"></textarea>
-            </div>
+<head>
+    <link href="Test.css" rel="stylesheet" />
+    <link href="button.css" rel="stylesheet" />
+    <script src="Constant.js" type="module"></script>
+    <script src="Test.js" type="module"></script>
+
+    <link rel="icon" href="img/Logo.png">
+    <title>Code Editor - SimpleC</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital@0;1&family=Montserrat&family=Space+Mono&family=Work+Sans:ital,wght@0,500;0,800;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono:wght@300&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&display=swap" rel="stylesheet">
+</head>
+<header>
+    <h1>Code Editor</h1>
+</header>
+
+<body onload="">
+    <div class="editor_container">
+        <div class="file_viewer">
+            <section id="file_viewer" name="file_viewer">
+                <button class="file folder" role="button"><img src="img/folder.png" style="width: 15px; height: 15px;">Project1</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+                <button class="file" role="button"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">file.sc</button>
+            </section>
         </div>
-    </body>
+        <div class="Editor">
+            <div class="line_nums">
+                <p id="lines" name="lines">1</p>
+            </div>
+            <div class="code_editor" output="output" name="output" id="output"></div>
+        </div>
+        <div class="terminal" name="terminal" id="terminal">
+            <p class="terminal_output" id="terminal_output" name="terminal_output"></p>
+            <textarea class="terminal_input" id="terminal_input" name="terminal_input"></textarea>
+        </div>
+    </div>
+</body>
+
 </html>
 
 <!--
