@@ -74,7 +74,9 @@ const test_fileViewer = {
 };
 
 function saveCurrFile() {
-    
+    let request = new XMLHttpRequest();
+    request.open('POST', `${c.origin}/${cPos.currScript}`);
+    request.send(getCode());
 }
 function loadFiles() {
     file_viewer.innerHTML = '';
@@ -97,6 +99,7 @@ function clickScript(project, script) {
 
     request.open('GET', `${c.origin}/Projects/${project}/${script}`);
     request.onload = () => {
+        cPos.currScript = `Projects/${project}/${script}`;
         terminal_input.innerHTML = request.responseText;
         current_code = terminal_input.innerHTML + ' ';
         terminal_input.innerHTML = '';
@@ -106,7 +109,6 @@ function clickScript(project, script) {
     };
 
     request.send();
-    cPos.currScript = `/Projects/${project}/${script}`;
 }
 
 // Editor functions
