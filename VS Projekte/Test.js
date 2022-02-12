@@ -1,5 +1,4 @@
-const c = require("./Constant.js");
-
+import { c } from "./Constant.js"
 String.prototype.removeAt = c.removeAt;
 
 // Editor data
@@ -52,7 +51,6 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
         http(xhr.responseText);
     }
 }
-
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -138,7 +136,6 @@ function highlight_code(tokens) {
 function lexing(code) {
     // Reset data
     lineData = [];
-    allNewlines = [];
 
     // Generating tokenlist
     var ln = 0;
@@ -484,7 +481,7 @@ function printTxt(msg) {
 }
 function http(msg) {
     if (!msg) return;
-    finalStr = msg.split('\n');
+    var finalStr = msg.split('\n');
 
     var maxLooptime = 1000;
     var currLooptime = 0;
