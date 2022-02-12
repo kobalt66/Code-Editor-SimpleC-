@@ -21,7 +21,8 @@ const cPos = {
     clipboardStart: undefined,
     clipboardEnd: undefined,
     clipboardCode: '',
-    allowedToType: false
+    allowedToType: false,
+    currScript : ''
 }
 
 // Send request to server
@@ -72,6 +73,9 @@ const test_fileViewer = {
     }
 };
 
+function saveCurrFile() {
+    
+}
 function loadFiles() {
     file_viewer.innerHTML = '';
 
@@ -102,6 +106,7 @@ function clickScript(project, script) {
     };
 
     request.send();
+    cPos.currScript = `/Projects/${project}/${script}`;
 }
 
 // Editor functions
@@ -750,7 +755,7 @@ function init() {
                     cPos.idx += lineData[cPos.lnIdx - 1].max_rowIdx;
                 }
                 break;
-            case 'KeyS':
+            case 'KeyB':
                 if (cPos.AltLeft) {
                     // Send that request:
                     const code = {
@@ -759,6 +764,9 @@ function init() {
 
                     CurlPythonServer(code);
                 }
+            case 'KeyS':
+                if (cPos.AltLeft)
+                    saveCurrFile();
             default:
                 var char = c.getCharFromKeycode(e.code);
 
