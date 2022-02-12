@@ -1,3 +1,4 @@
+//const c = require("./Constant.js");
 import { c } from "./Constant.js"
 String.prototype.removeAt = c.removeAt;
 
@@ -9,6 +10,7 @@ var clipboard = '';
 
 var terminal_input = null;
 var terminal_output = null;
+var file_viewer = null;
 const cPos = {
     idx: 0,
     lnIdx: 1,
@@ -50,6 +52,43 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
         xhr.send();
         http(xhr.responseText);
     }
+}
+
+// File viewer
+const test_fileViewer = {
+    projects : {
+        "project1" : {
+            open : false,
+            files : {
+                "test.sc" : { path : "./test.sc" },
+                "test2.sc" : { path : "./test2.sc" }
+            }
+        },
+        "project2" : {
+            open : false,
+            files : {
+    
+            }
+        }
+    }
+};
+
+function loadFiles() {
+    file_viewer = !file_viewer ? document.getElementById("file_viewer") : file_viewer;
+    file_viewer.innerHTML = '';
+
+    for (let project in test_fileViewer.projects) {
+        file_viewer.innerHTML += `<button class="file folder" role="button" onclick="clickProject('${project}')"><img src="img/folder.png" style="width: 15px; height: 15px;">${project}</button>`;
+        const currProject = test_fileViewer.projects[project];
+
+        if (currProject.open)
+            for (let file in currProject.files)
+                file_viewer.innerHTML += `<button class="file" role="button" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+    }
+}
+function clickProject(project) {
+    test_fileViewer.projects[project].open = !test_fileViewer.projects[project].open;
+    loadFiles();
 }
 
 // Editor functions
@@ -441,6 +480,7 @@ function addCharTocode(char, idx = 0) {
     return;
 }
 
+// Code stuff
 function genReplacement(replacement, atIdx) {
     return {
         replacement: replacement,
@@ -467,6 +507,7 @@ function replaceAt(idx, char, moreChanges = []) {
     return finalStr;
 }
 
+// Terminal stuff
 function throwError(msg) {
     terminal_output.innerHTML += `<br><span style="color: #eb4034; text-shadow: 0 0 5px #eb4034;">Error:<br>   ${msg}</span><br>`;
 }
@@ -602,6 +643,8 @@ function init() {
 
     // Set up document
     window.getCode = getCode;
+    window.loadFiles = loadFiles;
+    window.clickProject = clickProject;
 
     // Key events
     document.addEventListener('keydown', function (e) {
@@ -808,14 +851,4 @@ public class Program {
       
    }
 }
-
-#define global_STR "GLOBAL STRING! (for libDEFAULTlib)"
-
-public class Program {
-   static function void Main() {
-      Console.WriteLine(1 + (2 / 3) * 5.2);
-      Console.WriteLine("Test logging!");
-      Console.WriteLine(global_STR);
-   }
-} 
 */
