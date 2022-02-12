@@ -74,7 +74,6 @@ const test_fileViewer = {
 };
 
 function loadFiles() {
-    file_viewer = !file_viewer ? document.getElementById("file_viewer") : file_viewer;
     file_viewer.innerHTML = '';
 
     for (let project in test_fileViewer.projects) {
@@ -83,35 +82,27 @@ function loadFiles() {
 
         if (currProject.open)
             for (let file in currProject.files)
-                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
     }
-}
-function getCodeFromFile(file) {
-    var rawFile = new XMLHttpRequest();
-    var url = `${c.origin}/testProject/${file}`;
-
-    rawFile.open("GET", url);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-                return rawFile.responseText;
-            else
-                return 'No code awailable';
-        }
-    }
-
-    rawFile.send();
 }
 function clickProject(project) {
     test_fileViewer.projects[project].open = !test_fileViewer.projects[project].open;
     loadFiles();
 }
-function clickScript(project, script) {
-    var code = getCodeFromFile(script);
-    console.log(code);
-    processTerminal(`load -d ${code}`);
+function clickScript(script) {
+    let request = new XMLHttpRequest();
+
+    request.open('GET', `${c.origin}/testProject/${script}`);
+    request.onload = () => {
+        terminal_input.innerHTML = request.responseText;
+        current_code = terminal_input.innerHTML + ' ';
+        terminal_input.innerHTML = '';
+        
+        updateCursor(0, false);
+        lexing(final_code);
+    };
+
+    request.send();
 }
 
 // Editor functions
@@ -562,8 +553,6 @@ function http(msg) {
     }
 }
 function processTerminal(code) {
-    terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
-    terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
     terminal_input.value = '';
     info(code);
 
@@ -663,20 +652,25 @@ function processTerminal(code) {
 }
 
 // Initializing code
+function bodyInit() {
+    // Set up objects
+    terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
+    terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
+    file_viewer = !file_viewer ? document.getElementById("file_viewer") : file_viewer;
+
+    loadFiles();
+}
 function init() {
     console.log("Called init function.");
 
     // Set up document
     window.getCode = getCode;
-    window.loadFiles = loadFiles;
     window.clickProject = clickProject;
     window.clickScript = clickScript;
+    window.bodyInit = bodyInit;
 
     // Key events
     document.addEventListener('keydown', function (e) {
-        terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
-        terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
-
         //console.log(e.code);
         if (e.code === 'Escape') {
             cPos.allowedToType = !cPos.allowedToType;
