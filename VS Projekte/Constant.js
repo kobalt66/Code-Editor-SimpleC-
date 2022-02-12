@@ -304,7 +304,7 @@ const command_tokens = [
     '-this'
 ];
 
-module.exports = {
+export const c = {
     operator: operator,
     keyword: keyword,
     metacode: metacode,
