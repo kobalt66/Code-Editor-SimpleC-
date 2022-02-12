@@ -83,12 +83,35 @@ function loadFiles() {
 
         if (currProject.open)
             for (let file in currProject.files)
-                file_viewer.innerHTML += `<button class="file" role="button" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
     }
+}
+function getCodeFromFile(file) {
+    var rawFile = new XMLHttpRequest();
+    var url = `${c.origin}/testProject/${file}`;
+
+    rawFile.open("GET", url);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+                return rawFile.responseText;
+            else
+                return 'No code awailable';
+        }
+    }
+
+    rawFile.send();
 }
 function clickProject(project) {
     test_fileViewer.projects[project].open = !test_fileViewer.projects[project].open;
     loadFiles();
+}
+function clickScript(project, script) {
+    var code = getCodeFromFile(script);
+    console.log(code);
+    processTerminal(`load -d ${code}`);
 }
 
 // Editor functions
@@ -539,8 +562,10 @@ function http(msg) {
     }
 }
 function processTerminal(code) {
-    info(code);
+    terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
+    terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
     terminal_input.value = '';
+    info(code);
 
     // Spllitting command
     var items = code.split(' ');
@@ -645,6 +670,7 @@ function init() {
     window.getCode = getCode;
     window.loadFiles = loadFiles;
     window.clickProject = clickProject;
+    window.clickScript = clickScript;
 
     // Key events
     document.addEventListener('keydown', function (e) {
