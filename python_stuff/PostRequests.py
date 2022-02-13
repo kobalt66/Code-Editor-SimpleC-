@@ -20,26 +20,25 @@ def SAVESCRIPT(content):
         projectPath = PROJECTS + "/" + projectTag
         scriptPath = projectPath + "/" + scriptTag
         
-        if not path.exists(projectPath):
+        if not path.isdir(projectPath):
             mkdir(projectPath)
             file = open(scriptPath, 'x')
             file.write(code)
             file.close()
+        elif not path.exists(scriptPath):
+            file = open(scriptPath, 'x')
+            file.write(code)
+            file.close()
         else:
-            if not path.exists(scriptPath):
-                file = open(scriptPath, 'x')
-                file.write(code)
-                file.close()
-            else:
-                file = open(scriptPath, 'w')
-                file.write(code)
-                file.close()
+            file = open(scriptPath, 'w')
+            file.write(code)
+            file.close()
  
         return f"Successfully saved {projectTag}/{scriptTag}!".encode('utf-8')
     except Exception as e:
         return (f"[SAVEPROJECT] Something went wrong while saving {projectTag}/{scriptTag}! " + str(e)).encode('utf-8')
             
-def POST(content):
+def COMPILE(content):
     # Process data
     JSON = content.decode('utf-8')
     projectTag = loads(JSON)['tag']
