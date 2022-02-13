@@ -47,20 +47,24 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers.get('content-length', 0))
         body = self.rfile.read(content_length)
         
-        codeJSON = body.decode('utf-8')
-        code = loads(codeJSON)['code']
+        JSON = body.decode('utf-8')
+        _type = loads(JSON)['type']
         
+        output = ''
+        if _type == 'SAVEPROJECT':
+            output = PostRequest.SAVEPROJECT(body)
+        elif _type == 'POST':
+            output = PostRequest.POST(body)
         
+        self.wfile.write(output)
         
-            
-            
 class PostRequest:
-    def do_SAVEPROJECT(content):
+    def SAVEPROJECT(content):
         # Process data
         try:
             # Extract data from JSON
             JSON = content.decode('utf-8')
-            obj = loads(codeJSON)
+            obj = loads(JSON)
             
             projectTag = obj['tag']
             code = obj['code']
@@ -82,6 +86,9 @@ class PostRequest:
             
     def POST(body):
         # Process data
+        JSON = body.decode('utf-8')
+        code = loads(codeJSON)['code']
+        
         try:
             result = runScript('js_test', code)
             
