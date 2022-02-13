@@ -8,6 +8,23 @@ var current_code = ' ';
 var final_code = '';
 var clipboard = '';
 
+var loadedProjects = {
+    projects: {
+        "project1": {
+            open: false,
+            files: {
+                "test.sc": "public class Program { static function void Main(str args) { Console.WriteLine(msg); } }",
+                "test2.sc": "#define asdf \"GLOBAL_STRING\" public class Program { static function void Main(str args) { int idx = 0;  while (true) { idx++; Console.WriteLine(idx); if (idx ? 200)@return;  } } }"
+            }
+        },
+        "project2": {
+            open: false,
+            files: [
+            ]
+        }
+    }
+};
+
 var terminal_input = null;
 var terminal_output = null;
 var file_viewer = null;
@@ -57,41 +74,23 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
 }
 
 // File viewer
-const test_fileViewer = {
-    projects: {
-        "project1": {
-            open: false,
-            files: [
-                "test.sc",
-                "test2.sc"
-            ]
-        },
-        "project2": {
-            open: false,
-            files: [
-            ]
-        }
-    }
-};
-
-function saveCurrProject() {
-    console.log("Saving: " + cPos.currScript);
-
+function saveCurrScript() {
     const code = {
-        type: "SAVEPROJECT",
-        tag: "project1",
-        code: "HERE WILL BE THE CODE OF THE PROJECT"
+        type: "SAVESCRIPT",
+        tag: cPos.currProject,
+        script: {
+            tag: cPos.currScript,
+            code: getCode()
+        }
     };
     CurlPythonServer(code);
-
-    console.log("Saved code");
 }
 function loadFiles() {
     file_viewer.innerHTML = '';
 
-    for (let project in test_fileViewer.projects) {
+    for (let project in loadedProjects.projects) {
         file_viewer.innerHTML += `<button class="file folder" role="button" onclick="clickProject('${project}')"><img src="img/folder.png" style="width: 15px; height: 15px;">${project}</button>`;
-        const currProject = test_fileViewer.projects[project];
+        const currProject = loadedProjects.projects[project];
 
         if (currProject.open)
             for (let file of currProject.files)
@@ -104,20 +103,15 @@ function clickProject(project) {
     loadFiles();
 }
 function clickScript(project, script) {
-    let request = new XMLHttpRequest();
+    var projectPath = `$${project}/${script}`;
 
-    request.open('GET', `${c.origin}/Projects/${project}/${script}`);
-    request.onload = () => {
-        cPos.currScript = script;
-        terminal_input.innerHTML = request.responseText;
-        current_code = terminal_input.innerHTML + ' ';
-        terminal_input.innerHTML = '';
+    cPos.currScript = script;
+    terminal_input.innerHTML = request.responseText;
+    current_code = terminal_input.innerHTML + ' ';
+    terminal_input.innerHTML = '';
 
-        updateCursor(0, false);
-        lexing(final_code);
-    };
-
-    request.send();
+    updateCursor(0, false);
+    lexing(final_code);
 }
 
 // Editor functions
@@ -778,7 +772,7 @@ function init() {
                 }
             case 'KeyS':
                 if (cPos.AltLeft) {
-                    saveCurrProject();
+                    saveCurrScript();
                     break;
                 }
             default:
