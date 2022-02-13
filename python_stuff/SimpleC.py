@@ -4690,16 +4690,16 @@ def run(projectdir):
     # Parsing the project
     error = ParseScripts(projectdir)
     if error:
-        return error
+        return error.throw()
     error = ParseExternLibraries()
     if error:
-        return error
+        return error.throw()
 
     # Compiling the project
     compiler = compile2Csharp(masterscript, outputdir, projectdir)
     error = compiler.compile()
     if error:
-        return error
+        return error.throw()
 
     return None
 
