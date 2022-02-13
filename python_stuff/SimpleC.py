@@ -200,7 +200,8 @@ DIGITS = '0123456789'
 LETGITS = LETTERS + DIGITS
 FLOATMIN = 0.0000000000000001
 
-outputdir = "python_stuff/"
+PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
+outputdir = ""
 librarydir = "Libraries"
 fileType = ".sc"
 usedLibs = []
@@ -3315,7 +3316,8 @@ class Parser:
 
 
 def ParseScripts(projectdir):
-    files = os.listdir(projectdir)
+    global PROJECTS
+    files = os.listdir(f"{PROJECTS}/{projectdir}")
     print(files)
     
     for file in files:
@@ -4669,8 +4671,9 @@ class compile2Csharp:
 
 
 def openFile(projectdir, fn):
+    global PROJECTS
     try:
-        with open(f'{projectdir}/{fn}{fileType}', "r") as f:
+        with open(f'{PROJECTS}/{projectdir}/{fn}{fileType}', "r") as f:
             script = f.read()
             f.close()
             return script, None
@@ -4745,4 +4748,5 @@ def runScript(fn, code):
 # - Cannot have private classes
 # - Update Wiki on GitHub!
 #
+
 
