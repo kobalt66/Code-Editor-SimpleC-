@@ -32,7 +32,6 @@ const cPos = {
 const CurlPythonServer = async (code, address = c.server, func = "POST") => {
     unique_info(`[${func}] Curl on ${address}`);
 
-    var result = '';
     if (func === "POST") {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", address);
@@ -41,15 +40,13 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
             if (xhr.readyState === 4) {
                 // Process data
                 terminal_input.innerHTML = xhr.responseText;
-                result = terminal_input.innerHTML;
+                var result = terminal_input.innerHTML;
                 terminal_input.innerHTML = '';
                 
                 if (code.type === 'LOADPROJECTS') {
-
                     var projects = result.split(';');
-                    console.log(projects);
-
                     loadedProjects = { projects : { } };
+
                     for (let i = 0; i < projects.length; i++) {
                         var currProject = projects[i];
                         if (currProject === "") continue;
@@ -65,6 +62,7 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
                         for (let j = 1; j < files.length; j++)
                             loadedProjects.projects[projectTag].files.push(files[j]);
                     }
+                    return;
                 }
                 
                 http(result);
@@ -85,8 +83,6 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
         xhr.send(JSON.stringify(code));
         http(xhr.responseText);
     }
-
-    return result;
 }
 
 // File viewer
