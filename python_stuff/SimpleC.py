@@ -3939,6 +3939,7 @@ class compile2Csharp:
         self.outputFile = f'{self.outputdir}output.cs'
 
         # keeping track of names
+        self.currLib = '' 
         self.currScript = ''
         self.usings = []
         self.classes = []
@@ -4102,7 +4103,7 @@ class compile2Csharp:
         value = var.varName.value
         for const in self.constants:
             if const.accessibility:
-                if const.name == value:
+                if const.name == value and const.script.lib == self.currLib:
                     return f'___Global___.{const.script.lib}_{value}'
             if not const.accessibility:
                 if const.name == value and const.script.name == self.currScript:
@@ -4355,6 +4356,7 @@ class compile2Csharp:
         
         # Start with libs
         for lib in self.ms.libs:
+            self.currLib = lib.name
             self.write('\n\n')
             self.write(
                 f'namespace {lib.name} ' + '\n{\n')
