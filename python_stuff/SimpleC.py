@@ -202,7 +202,7 @@ FLOATMIN = 0.0000000000000001
 
 PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 outputdir = ""
-librarydir = "Libraries"
+librarydir = "/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Libraries"
 fileType = ".sc"
 usedLibs = []
 
