@@ -22,7 +22,8 @@ const cPos = {
     clipboardEnd: undefined,
     clipboardCode: '',
     allowedToType: false,
-    currScript : ''
+    currScript: '',
+    currProject: ''
 }
 
 // Send request to server
@@ -57,26 +58,33 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
 
 // File viewer
 const test_fileViewer = {
-    projects : {
-        "project1" : {
-            open : false,
-            files : [
+    projects: {
+        "project1": {
+            open: false,
+            files: [
                 "test.sc",
                 "test2.sc"
             ]
         },
-        "project2" : {
-            open : false,
-            files : [
+        "project2": {
+            open: false,
+            files: [
             ]
         }
     }
 };
 
-function saveCurrFile() {
-    let request = new XMLHttpRequest();
-    request.open('POST', `${c.origin}/${cPos.currScript}`);
-    request.send(getCode());
+function saveCurrProject() {
+    console.log("Saving: " + cPos.currScript);
+
+    const code = {
+        type: "SAVEPROJECT",
+        tag: "project1",
+        code: "HERE WILL BE THE CODE OF THE PROJECT"
+    };
+    CurlPythonServer(code);
+
+    console.log("Saved code");
 }
 function loadFiles() {
     file_viewer.innerHTML = '';
@@ -91,6 +99,7 @@ function loadFiles() {
     }
 }
 function clickProject(project) {
+    cPos.currScript = project;
     test_fileViewer.projects[project].open = !test_fileViewer.projects[project].open;
     loadFiles();
 }
@@ -99,7 +108,7 @@ function clickScript(project, script) {
 
     request.open('GET', `${c.origin}/Projects/${project}/${script}`);
     request.onload = () => {
-        cPos.currScript = `Projects/${project}/${script}`;
+        cPos.currScript = script;
         terminal_input.innerHTML = request.responseText;
         current_code = terminal_input.innerHTML + ' ';
         terminal_input.innerHTML = '';
@@ -759,16 +768,19 @@ function init() {
                 break;
             case 'KeyB':
                 if (cPos.AltLeft) {
-                    // Send that request:
                     const code = {
-                        code: getCode()
+                        type: "COMPILE",
+                        tag: cPos.currProject
                     };
 
                     CurlPythonServer(code);
+                    break;
                 }
             case 'KeyS':
-                if (cPos.AltLeft)
-                    saveCurrFile();
+                if (cPos.AltLeft) {
+                    saveCurrProject();
+                    break;
+                }
             default:
                 var char = c.getCharFromKeycode(e.code);
 
