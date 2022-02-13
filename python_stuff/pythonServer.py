@@ -87,7 +87,7 @@ class PostRequest:
     def POST(body):
         # Process data
         JSON = body.decode('utf-8')
-        code = loads(codeJSON)['code']
+        code = loads(JSON)['code']
         
         try:
             result = runScript('js_test', code)
