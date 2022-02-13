@@ -8,22 +8,7 @@ var current_code = ' ';
 var final_code = '';
 var clipboard = '';
 
-var loadedProjects = {
-    projects: {
-        "project1": {
-            open: false,
-            files: {
-                "test.sc": "public class Program { static function void Main(str args) { Console.WriteLine(msg); } }",
-                "test2.sc": "#define asdf \"GLOBAL_STRING\" public class Program { static function void Main(str args) { int idx = 0;  while (true) { idx++; Console.WriteLine(idx); if (idx ? 200)@return;  } } }"
-            }
-        },
-        "project2": {
-            open: false,
-            files: [
-            ]
-        }
-    }
-};
+var loadedProjects = { };
 
 var terminal_input = null;
 var terminal_output = null;
@@ -47,17 +32,46 @@ const cPos = {
 const CurlPythonServer = async (code, address = c.server, func = "POST") => {
     unique_info(`[${func}] Curl on ${address}`);
 
+    var result = '';
     if (func === "POST") {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", address);
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4)
-                http(xhr.responseText);
+            if (xhr.readyState === 4) {
+                // Process data
+                terminal_input.innerHTML = xhr.responseText;
+                result = terminal_input.innerHTML;
+                terminal_input.innerHTML = '';
+                
+                if (code.type === 'LOADPROJECTS') {
+
+                    var projects = result.split(';');
+                    console.log(projects);
+
+                    loadedProjects = { projects : { } };
+                    for (let i = 0; i < projects.length; i++) {
+                        var currProject = projects[i];
+                        if (currProject === "") continue;
+
+                        var files = currProject.split(' ');
+                        var projectTag = files[0];
+
+                        loadedProjects.projects[projectTag] = {
+                            open : false,
+                            files : []
+                        }
+
+                        for (let j = 1; j < files.length; j++)
+                            loadedProjects.projects[projectTag].files.push(files[j]);
+                    }
+                }
+                
+                http(result);
+            }
         };
 
         xhr.send(JSON.stringify(code));
-        http(xhr.responseText);
     }
     else if (func === "GET") {
         var xhr = new XMLHttpRequest();
@@ -71,6 +85,8 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
         xhr.send(JSON.stringify(code));
         http(xhr.responseText);
     }
+
+    return result;
 }
 
 // File viewer
@@ -83,20 +99,18 @@ function saveCurrScript() {
             code: getCode()
         }
     };
-    CurlPythonServer(code);
+    var res = CurlPythonServer(code);
+    http(res);
 }
 function loadFiles() {
     file_viewer.innerHTML = '';
-
-    //const code = { type: "GET_PROJECTS" };
-    //CurlPythonServer(code, c.server, "GET");
 
     for (let project in loadedProjects.projects) {
         file_viewer.innerHTML += `<button class="file folder" role="button" onclick="clickProject('${project}')"><img src="img/folder.png" style="width: 15px; height: 15px;">${project}</button>`;
         const currProject = loadedProjects.projects[project];
 
         if (currProject.open)
-            for (let file of Object.keys(currProject.files))
+            for (let file of currProject.files)
                 file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
     }
 }
@@ -108,7 +122,13 @@ function clickScript(project, script) {
     cPos.currProject = project;
     cPos.currScript = script;
 
-    current_code = loadedProjects.projects[project].files[script] + ' ';
+    const code = {
+        type : "GETCODE",
+        tag : script    
+    }
+    var res = CurlPythonServer(code);
+
+    current_code = res;
     updateCursor(0, false);
     lexing(final_code);
 }
@@ -668,6 +688,10 @@ function bodyInit() {
     terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
     file_viewer = !file_viewer ? document.getElementById("file_viewer") : file_viewer;
 
+    // Loading projects
+    const code = { type: "LOADPROJECTS" };
+    CurlPythonServer(code);
+
     loadFiles();
 }
 function init() {
@@ -768,7 +792,8 @@ function init() {
                         tag: cPos.currProject
                     };
 
-                    CurlPythonServer(code);
+                    var res = CurlPythonServer(code);
+                    http(res);
                     break;
                 }
             case 'KeyS':
