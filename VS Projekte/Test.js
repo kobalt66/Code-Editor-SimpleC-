@@ -41,9 +41,8 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
             if (xhr.readyState === 4) {
                 // Process data
                 bin.innerHTML = xhr.responseText;
-                var result = bin.innerHTML;
-                
                 if (code.type === 'LOADPROJECTS') {
+                    var result = bin.innerHTML;
                     bin.innerHTML = '';
                     var projects = result.split(';');
                     loadedProjects = { projects : { } };
@@ -130,6 +129,7 @@ function clickScript(project, script) {
         script : script    
     }
     CurlPythonServer(code);
+    console.log(bin.innerHTML);
     var res = bin.innerHTML;
     bin.innerHTML = '';
 
@@ -792,7 +792,7 @@ function init() {
             case 'KeyB':
                 if (cPos.AltLeft) {
                     if (cPos.currProject === '' || cPos.currScript === '') break;
-                    
+
                     const code = {
                         type: "COMPILE",
                         tag: cPos.currProject
