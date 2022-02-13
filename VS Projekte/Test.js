@@ -68,7 +68,7 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
                 http(xhr.responseText);
         };
 
-        xhr.send();
+        xhr.send(JSON.stringify(code));
         http(xhr.responseText);
     }
 }
@@ -88,28 +88,27 @@ function saveCurrScript() {
 function loadFiles() {
     file_viewer.innerHTML = '';
 
+    //const code = { type: "GET_PROJECTS" };
+    //CurlPythonServer(code, c.server, "GET");
+
     for (let project in loadedProjects.projects) {
         file_viewer.innerHTML += `<button class="file folder" role="button" onclick="clickProject('${project}')"><img src="img/folder.png" style="width: 15px; height: 15px;">${project}</button>`;
         const currProject = loadedProjects.projects[project];
 
         if (currProject.open)
-            for (let file of currProject.files)
+            for (let file of Object.keys(currProject.files))
                 file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
     }
 }
 function clickProject(project) {
-    cPos.currScript = project;
-    test_fileViewer.projects[project].open = !test_fileViewer.projects[project].open;
+    loadedProjects.projects[project].open = !loadedProjects.projects[project].open;
     loadFiles();
 }
 function clickScript(project, script) {
-    var projectPath = `$${project}/${script}`;
-
+    cPos.currProject = project;
     cPos.currScript = script;
-    terminal_input.innerHTML = request.responseText;
-    current_code = terminal_input.innerHTML + ' ';
-    terminal_input.innerHTML = '';
 
+    current_code = loadedProjects.projects[project].files[script] + ' ';
     updateCursor(0, false);
     lexing(final_code);
 }
@@ -598,7 +597,7 @@ function processTerminal(code) {
                     console.log(address);
                     break;
                 case '-this':
-                    returnVal = getCode();
+                    returnVal = cPos.currProject;
                     break;
                 case '-p':
                     printRes = true;
@@ -634,8 +633,9 @@ function processTerminal(code) {
                 return;
             }
 
-            const code = {
-                code: obj.returnVal
+            var code = {
+                type: "COMPILE",
+                tag: obj.returnVal
             }
             CurlPythonServer(code, obj.address);
             break;
@@ -650,7 +650,8 @@ function processTerminal(code) {
             console.log(obj.returnVal);
             break;
         case 'run':
-            CurlPythonServer(getCode(), c.server, 'GET');
+            var code = { type: "RUN" };
+            CurlPythonServer(code, c.server, 'GET');
             return;
         case 'clear':
             terminal_output.innerHTML = '';
