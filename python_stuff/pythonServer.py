@@ -2,7 +2,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from json import loads
 from sys import argv
 from subprocess import call, run, PIPE
-from PostRequests import SAVEPROJECT, POST
+from PostRequests import SAVESCRIPT, COMPILE
 
 BIND_HOST = '192.168.178.58'
 PORT = 8008
@@ -49,11 +49,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         _type = loads(JSON)['type']
         
         output = ''
-        if _type == 'SAVEPROJECT':
+        if _type == 'SAVESCRIPT':
             output = SAVEPROJECT(body)
-        elif _type == 'POST':
+        elif _type == 'COMPILE':
             output = POST(body)
         
+        print(output.decode('utf-8'))
         self.wfile.write(output)
         
         
