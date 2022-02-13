@@ -1,6 +1,6 @@
 from json import loads
 from os import path, mkdir
-from SimpleC import runScript
+from SimpleC import runScript, run
 
 PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 
@@ -42,10 +42,10 @@ def SAVESCRIPT(content):
 def POST(content):
     # Process data
     JSON = content.decode('utf-8')
-    code = loads(JSON)['code']
+    projectTag = loads(JSON)['tag']
     
     try:
-        result = runScript('js_test', code)
+        result = run(projectTag)
         
         if result:
             json = result
