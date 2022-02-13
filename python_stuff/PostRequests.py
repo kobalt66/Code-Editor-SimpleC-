@@ -1,6 +1,6 @@
 from json import loads
+from os import path
 from SimpleC import runScript
-from os import *
 
 PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 
@@ -17,17 +17,18 @@ def SAVEPROJECT(content):
         # Saving data
         projectPath = PROJECTS + "/" + projectTag
         
-        file = open(projectPath, 'x')
-        file.write(code)
-        file.close()
-        
+        if not path.exists(projectPath):
+            file = open(projectPath, 'x')
+            file.write(code)
+            file.close()
+        else:
+            file = open(projectPath, 'w')
+            file.write(code)
+            file.close()
+ 
         return f"Successfully saved {projectTag}!".encode('utf-8')
-        print(f"Successfully saved {projectTag}!")
-        
     except Exception as e:
-        return f"[SAVEPROJECT] Something went wrong while saving {projectTag}!".encode('utf-8')
-        print(f"[SAVEPROJECT] Something went wrong while saving {projectTag}!")
-        print(e)
+        return (f"[SAVEPROJECT] Something went wrong while saving {projectTag}! " + str(e)).encode('utf-8')
             
 def POST(content):
     # Process data
@@ -42,9 +43,6 @@ def POST(content):
             return json.encode('utf-8')
         else:
             return "Successfully compiled the code!".encode('utf-8')
-        print("Success!")
         
     except Exception as e:
-        return "[POST] Something went wrong while processing the data!".encode('utf-8')
-        print("[POST] Something went wrong while processing the data!")
-        print(e)
+        return ("[POST] Something went wrong while processing the data!" + str(e)).encode('utf-8')
