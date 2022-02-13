@@ -1,13 +1,11 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from json import loads
 from sys import argv
-from SimpleC import runScript
 from subprocess import call, run, PIPE
-from os import path
+from PostRequests import SAVEPROJECT, POST
 
 BIND_HOST = '192.168.178.58'
 PORT = 8008
-PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -52,57 +50,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         
         output = ''
         if _type == 'SAVEPROJECT':
-            output = PostRequest.SAVEPROJECT(body)
+            output = SAVEPROJECT(body)
         elif _type == 'POST':
-            output = PostRequest.POST(body)
+            output = POST(body)
         
         self.wfile.write(output)
-        
-class PostRequest:
-    def SAVEPROJECT(content):
-        # Process data
-        try:
-            # Extract data from JSON
-            JSON = content.decode('utf-8')
-            obj = loads(JSON)
-            
-            projectTag = obj['tag']
-            code = obj['code']
-            
-            # Saving data
-            projectPath = PROJECTS + "/" + projectTag
-            
-            file = open(projectPath, 'x')
-            file.write(code)
-            file.close()
-            
-            return f"Successfully saved {projectTag}!".encode('utf-8')
-            print(f"Successfully saved {projectTag}!")
-            
-        except Exception as e:
-            return f"[SAVEPROJECT] Something went wrong while saving {projectTag}!".encode('utf-8')
-            print(f"[SAVEPROJECT] Something went wrong while saving {projectTag}!")
-            print(e)
-            
-    def POST(body):
-        # Process data
-        JSON = body.decode('utf-8')
-        code = loads(JSON)['code']
-        
-        try:
-            result = runScript('js_test', code)
-            
-            if result:
-                json = result
-                return json.encode('utf-8')
-            else:
-                return "Successfully compiled the code!".encode('utf-8')
-            print("Success!")
-            
-        except Exception as e:
-            return "[POST] Something went wrong while processing the data!".encode('utf-8')
-            print("[POST] Something went wrong while processing the data!")
-            print(e)
         
         
 
