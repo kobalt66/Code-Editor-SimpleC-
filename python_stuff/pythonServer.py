@@ -50,9 +50,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         
         output = ''
         if _type == 'SAVESCRIPT':
-            output = SAVEPROJECT(body)
+            output = SAVESCRIPT(body)
         elif _type == 'COMPILE':
-            output = POST(body)
+            output = COMPILE(body)
         
         print(output.decode('utf-8'))
         self.wfile.write(output)
