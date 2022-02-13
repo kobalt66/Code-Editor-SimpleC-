@@ -10,6 +10,7 @@ var clipboard = '';
 
 var loadedProjects = { };
 
+var bin = null;
 var terminal_input = null;
 var terminal_output = null;
 var file_viewer = null;
@@ -39,11 +40,11 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 // Process data
-                terminal_input.innerHTML = xhr.responseText;
-                var result = terminal_input.innerHTML;
-                terminal_input.innerHTML = '';
+                bin.innerHTML = xhr.responseText;
+                var result = bin.innerHTML;
                 
                 if (code.type === 'LOADPROJECTS') {
+                    bin.innerHTML = '';
                     var projects = result.split(';');
                     loadedProjects = { projects : { } };
 
@@ -62,10 +63,15 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
                         for (let j = 1; j < files.length; j++)
                             loadedProjects.projects[projectTag].files.push(files[j]);
                     }
+
+                    loadFiles();
                     return;
                 }
                 
-                http(result);
+                if (code.type !== 'GETCODE') {
+                    bin.innerHTML = '';
+                    http(result);
+                }
             }
         };
 
@@ -120,9 +126,12 @@ function clickScript(project, script) {
 
     const code = {
         type : "GETCODE",
-        tag : script    
+        project : project,
+        script : script    
     }
-    var res = CurlPythonServer(code);
+    CurlPythonServer(code);
+    var res = bin.innerHTML;
+    bin.innerHTML = '';
 
     current_code = res;
     updateCursor(0, false);
@@ -683,12 +692,11 @@ function bodyInit() {
     terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
     terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
     file_viewer = !file_viewer ? document.getElementById("file_viewer") : file_viewer;
+    bin = !bin ? document.getElementById("bin") : bin;
 
     // Loading projects
     const code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
-
-    loadFiles();
 }
 function init() {
     console.log("Called init function.");
@@ -783,6 +791,8 @@ function init() {
                 break;
             case 'KeyB':
                 if (cPos.AltLeft) {
+                    if (cPos.currProject === '' || cPos.currScript === '') break;
+                    
                     const code = {
                         type: "COMPILE",
                         tag: cPos.currProject
@@ -794,6 +804,7 @@ function init() {
                 }
             case 'KeyS':
                 if (cPos.AltLeft) {
+                    if (cPos.currProject === '' || cPos.currScript === '') break;
                     saveCurrScript();
                     break;
                 }
