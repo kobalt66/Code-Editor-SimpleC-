@@ -22,15 +22,13 @@
 }
 
 .tool {
-  background-color: rgb(77, 75, 75);
+    background-color: rgb(77, 75, 75);
     border: none;
     color: white;
-    text-decoration: none;
     display: inline-block;
     font-family: 'DM Mono', monospace;
     font-size: 13px;
     text-align: left;
-    width: 10%;
     height: 30px;
     transition-duration: 0.4s;
     cursor: pointer;
