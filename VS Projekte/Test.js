@@ -585,15 +585,19 @@ function info(msg) {
 function printTxt(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8f8f8f; text-shadow: 0 0 5px #8f8f8f;">${msg}</span>`;
 }
-function http(msg) {
+async function http(msg) {
     if (!msg) return;
     var finalStr = msg.split('\n');
 
+    var image = finalStr.length < 50;
     var maxLooptime = 1000;
     var currLooptime = 0;
     for (let res of finalStr) {
         if (maxLooptime > currLooptime) {
-            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;"><img src="img/connection.png" style="width: 15px; height: 15px; padding-right: 10px;">${res}</span>`;
+            if (image)
+                terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;"><img src="img/connection.png" style="width: 15px; height: 15px; padding-right: 10px;">${res}</span>`;
+            else
+                terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">${res}</span>`;
         }
         else {
             terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;"><img src="img/connection.png" style="width: 15px; height: 15px; padding-right: 10px;">... (${finalStr.length - 1001} more entries)</span>`;
@@ -746,15 +750,17 @@ function bodyInit() {
             }
 
             const reader = new FileReader()
-            reader.onload = (event) => {
+            reader.onload = (e) => {
                 info("Uploading: " + file);
+
+                var fileParts = file.split('.');
                 const code = {
                     type: "UPLOADLIB",
-                    lib: file.split('.')[0],
-                    code: event.target.result
+                    lib: fileParts[0] + '.' + fileParts[1],
+                    code: e.target.result
                 }
                 CurlPythonServer(code);
-            };
+            }
             reader.readAsText(event.target.files[0]);
         }
     });
@@ -953,5 +959,15 @@ init();
 // Error checking when compiling the script!
 //
 // ^ doesn't work in csharp!
+//
+// Saving options like 'curlInfo' to Raspberry PI (automatically)
+//
+// #import <lib> causes html to treat '<lib>' as an html object. Thus it closes the object with '</lib>' at the end of the script automatically.
+//
+// #import doesn't give access to global variables of that library!
+//
+// Block access to ___Global___ class by checking if that class got accessed in the code while building a project!
+//
+// FileReader doesn't work multiple times!
 //
 /////////////////////////////////////////////////////////////////////////////////////////
