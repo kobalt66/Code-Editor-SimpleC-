@@ -11,9 +11,14 @@ header {
     z-index: 1;
 }
 
-h1 {
+h4 {
     font-family: 'Montserrat';
-    width: 20%;
+    float: right;
+    width: 100px;
+    height: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 0%;
+    margin-top: 0%;
     border: 5px dotted rgb(255, 207, 207) ;
     color:rgb(235, 235, 235);
 }
@@ -37,10 +42,6 @@ div {
 
 ul {
     text-align: left;
-}
-
-.button {
-    background-color: rgb(75, 75, 75);
 }
 
 .Editor {
