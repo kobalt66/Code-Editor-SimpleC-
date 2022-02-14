@@ -1,8 +1,8 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from json import loads
 from sys import argv
-from PostRequests import SAVESCRIPT, COMPILE
-from GetRequests import RUN, LOADPROJECTS, GETCODE, UPLOADLIB
+from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB
+from GetRequests import RUN, LOADPROJECTS, GETCODE
 
 BIND_HOST = '192.168.178.58'
 PORT = 8008
