@@ -3353,7 +3353,7 @@ def ParseExternLibraries():
         if not name in usedLibs:
             continue
         
-        script, error = openFile(librarydir, name)
+        script, error = openLib(librarydir, name)
         if error:
             return error
     
@@ -4676,6 +4676,16 @@ def openFile(projectdir, fn):
     global PROJECTS
     try:
         with open(f'{PROJECTS}/{projectdir}/{fn}{fileType}', "r") as f:
+            script = f.read()
+            f.close()
+            return script, None
+    except Exception as e:
+        return None, Error(e, PYTHON_EXCEPTION, Position(0, -1, -1, fn, ""), fn)
+    
+def openLib(projectdir, fn):
+    global PROJECTS
+    try:
+        with open(f'{projectdir}/{fn}{fileType}', "r") as f:
             script = f.read()
             f.close()
             return script, None
