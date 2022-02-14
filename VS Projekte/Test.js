@@ -1,4 +1,3 @@
-//const c = require("./Constant.js");
 import { c } from "./Constant.js"
 String.prototype.removeAt = c.removeAt;
 
@@ -705,7 +704,7 @@ function processTerminal(code) {
             }
 
             var value = items[1];
-            if (typeof value !== "boolean") {
+            if (!["true", "false"].includes(value)) {
                 throwError("Value needs to be a boolean.");
                 return;
             }
