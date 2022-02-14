@@ -750,7 +750,8 @@ function bodyInit() {
                 info("Uploading: " + file);
                 const code = {
                     type : "UPLOADLIB",
-                    file : event.target.result
+                    file : file.split('.')[0],
+                    content : event.target.result
                 }
                 CurlPythonServer(code);
             };
