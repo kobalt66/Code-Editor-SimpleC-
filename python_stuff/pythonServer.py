@@ -2,7 +2,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from json import loads
 from sys import argv
 from PostRequests import SAVESCRIPT, COMPILE
-from GetRequests import RUN, LOADPROJECTS, GETCODE
+from GetRequests import RUN, LOADPROJECTS, GETCODE, UPLOADLIB
 
 BIND_HOST = '192.168.178.58'
 PORT = 8008
@@ -49,6 +49,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 output = LOADPROJECTS()
             elif _type == 'GETCODE':
                 output = GETCODE(body)
+            elif _type == 'UPLOADLIB':
+                output = UPLOADLIB(body)
             else:
                 output = (_type + " is not supported!").encode('utf-8')
                 
