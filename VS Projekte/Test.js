@@ -7,7 +7,7 @@ var current_code = ' ';
 var final_code = '';
 var clipboard = '';
 
-var loadedProjects = { };
+var loadedProjects = {};
 
 var bin = null;
 var terminal_input = null;
@@ -32,7 +32,7 @@ const cPos = {
 }
 
 // Send request to server
-const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => {}) => {
+const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => { }) => {
     if (cPos.showCurlInfo)
         unique_info(`[${func}] Curl on ${address}`);
 
@@ -45,11 +45,11 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
             if (xhr.readyState === 4) {
                 bin.innerHTML = xhr.responseText;
                 var result = bin.innerHTML;
-                
+
                 if (code.type === 'LOADPROJECTS') {
                     bin.innerHTML = '';
                     var projects = result.split(';');
-                    loadedProjects = { projects : { } };
+                    loadedProjects = { projects: {} };
 
                     for (let i = 0; i < projects.length; i++) {
                         var currProject = projects[i];
@@ -59,8 +59,8 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
                         var projectTag = files[0];
 
                         loadedProjects.projects[projectTag] = {
-                            open : false,
-                            files : []
+                            open: false,
+                            files: []
                         }
 
                         for (let j = 1; j < files.length; j++)
@@ -70,7 +70,7 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
                     loadFiles();
                     return;
                 }
-                
+
                 if (code.type !== 'GETCODE') {
                     bin.innerHTML = '';
                     http(result);
@@ -130,9 +130,9 @@ async function clickScript(project, script) {
     cPos.currScript = script;
 
     const code = {
-        type : "GETCODE",
-        project : project,
-        script : script    
+        type: "GETCODE",
+        project: project,
+        script: script
     }
     await CurlPythonServer(code, c.server, "POST", () => {
         var res = bin.innerHTML;
@@ -507,7 +507,7 @@ function updateCursor(newIdx, typeing = true) {
     }
 
     if (cPos.idx > current_code.length - 1)
-        cPos.idx =  current_code.length - 1;
+        cPos.idx = current_code.length - 1;
 
     getLineIdx();
     final_code = replaceAt(cPos.idx, '@', [
@@ -737,7 +737,7 @@ function bodyInit() {
     uploadLib.addEventListener("click", function () {
         realFileBtn.click();
     });
-    realFileBtn.addEventListener("change", function(event) {
+    realFileBtn.addEventListener("change", function (event) {
         if (realFileBtn.value) {
             const file = realFileBtn.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
             if (!file.includes('.txt')) {
@@ -749,9 +749,9 @@ function bodyInit() {
             reader.onload = (event) => {
                 info("Uploading: " + file);
                 const code = {
-                    type : "UPLOADLIB",
-                    file : file.split('.')[0],
-                    content : event.target.result
+                    type: "UPLOADLIB",
+                    lib: file.split('.')[0],
+                    code: event.target.result
                 }
                 CurlPythonServer(code);
             };
