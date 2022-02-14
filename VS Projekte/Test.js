@@ -737,17 +737,26 @@ function bodyInit() {
     uploadLib.addEventListener("click", function () {
         realFileBtn.click();
     });
-    realFileBtn.addEventListener("change", function() {
+    realFileBtn.addEventListener("change", function(event) {
         if (realFileBtn.value) {
-            info("Uploading: " + realFileBtn.value);
-
-            const code = {
-                type : "UPLOADLIB",
-                file : realFileBtn.value
+            const file = realFileBtn.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
+            if (!file.includes('.txt')) {
+                throwError(`The format of ${file} is not supported!<br>You can only upload .txt files.`);
+                return;
             }
-            CurlPythonServer(code);
+
+            const reader = new FileReader()
+            reader.onload = (event) => {
+                info("Uploading: " + file);
+                const code = {
+                    type : "UPLOADLIB",
+                    file : event.target.result
+                }
+                CurlPythonServer(code);
+            };
+            reader.readAsText(event.target.files[0]);
         }
-      });
+    });
 }
 function init() {
     console.log("Called init function.");
