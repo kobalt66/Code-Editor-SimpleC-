@@ -3,6 +3,7 @@ from os import path, mkdir
 from SimpleC import runScript, run
 
 PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
+LIBRARIES = "/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Libraries"
 
 def SAVESCRIPT(content):
     # Process data
@@ -47,5 +48,26 @@ def COMPILE(content):
         return json.encode('utf-8')
     else:
         return "Successfully compiled the code!".encode('utf-8')
-        
+    
+def UPLOADLIB(content):
+    # Process data
+    JSON = content.decode('utf-8')
+    obj = loads(JSON)
+    
+    lib = obj['lib']
+    code = obj['code']
+    
+    # Safe library
+    libPath = LIBRARIES + "/" + lib
+    
+    if not path.exists(libPath):
+        file = open(libPath, 'x')
+        file.write(code)
+        file.close()
+    else:
+        file = open(libPath, 'w')
+        file.write(code)
+        file.close()
+    
+    return f"Successfully uploaded {lib}.sc!".encode('utf-8')
 
