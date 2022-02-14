@@ -294,7 +294,8 @@ const commands = [
     "load",
     "log",
     "run",
-    "clear"
+    "clear",
+    "curlInfo"
 ];
 const command_tokens = [
     '-d',
