@@ -25,13 +25,15 @@ const cPos = {
     clipboardEnd: undefined,
     clipboardCode: '',
     allowedToType: false,
+    showCurlInfo: true,
     currScript: '',
     currProject: ''
 }
 
 // Send request to server
 const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => {}) => {
-    unique_info(`[${func}] Curl on ${address}`);
+    if (cPos.showCurlInfo)
+        unique_info(`[${func}] Curl on ${address}`);
 
     if (func === "POST") {
         var xhr = new XMLHttpRequest();
@@ -696,6 +698,21 @@ function processTerminal(code) {
         case 'clear':
             terminal_output.innerHTML = '';
             return;
+        case 'curlInfo':
+            if (items.length < 2) {
+                throwError("CurlInfor command needs value.");
+                return;
+            }
+
+            var value = items[1];
+            if (typeof value !== "boolean") {
+                throwError("Value needs to be a boolean.");
+                return;
+            }
+
+            cPos.showCurlInfo = (value === 'true');
+            info("Showing curl information: " + value);
+            break;
     }
 
     if (obj.printRes) printTxt(obj.returnVal);
