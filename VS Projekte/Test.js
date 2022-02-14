@@ -13,6 +13,8 @@ var bin = null;
 var terminal_input = null;
 var terminal_output = null;
 var file_viewer = null;
+var realFileBtn = null;
+var uploadLib = null;
 const cPos = {
     idx: 0,
     lnIdx: 1,
@@ -720,14 +722,32 @@ function processTerminal(code) {
 // Initializing code
 function bodyInit() {
     // Set up objects
-    terminal_input = terminal_input === null ? document.getElementById("terminal_input") : terminal_input;
-    terminal_output = terminal_output === null ? document.getElementById("terminal_output") : terminal_output;
-    file_viewer = !file_viewer ? document.getElementById("file_viewer") : file_viewer;
-    bin = !bin ? document.getElementById("bin") : bin;
+    terminal_input = document.getElementById("terminal_input");
+    terminal_output = document.getElementById("terminal_output");
+    file_viewer = document.getElementById("file_viewer");
+    bin = document.getElementById("bin");
+    realFileBtn = document.getElementById("real-file");
+    uploadLib = document.getElementById("uploadLib");
 
     // Loading projects
     const code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
+
+    // Object Events
+    uploadLib.addEventListener("click", function () {
+        realFileBtn.click();
+    });
+    realFileBtn.addEventListener("change", function() {
+        if (realFileBtn.value) {
+            info("Uploading: " + realFileBtn.value);
+
+            const code = {
+                type : "UPLOADLIB",
+                file : realFileBtn.value
+            }
+            CurlPythonServer(code);
+        }
+      });
 }
 function init() {
     console.log("Called init function.");
@@ -925,33 +945,3 @@ init();
 // ^ doesn't work in csharp!
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-
-/*
-#lib = "custom_Lib"
-private str msg = "Secret Message!";
-
-public class Program {
-   static function void Main(str args) {
-      Console.WriteLine(msg);
-   }
-}
-
-#define asdf "GLOBAL_STRING"
-
-public class Program {
-  static function void Main(str args) {
-     int idx = 0;  
-     while (true) {
-       idx++;
-       Console.WriteLine(idx);
-       if (idx ? 200)@return;  
-     }
-  }
-}
-
-public class Program {
-   static function void Main() {
-      
-   }
-}
-*/
