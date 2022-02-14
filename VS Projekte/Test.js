@@ -135,7 +135,7 @@ async function clickScript(project, script) {
         var res = bin.innerHTML;
         bin.innerHTML = '';
 
-        current_code = res + ' ';
+        loadCode(res);
         updateCursor(0, false);
         lexing(final_code);
     });
@@ -503,6 +503,9 @@ function updateCursor(newIdx, typeing = true) {
         }
     }
 
+    if (cPos.idx > current_code.length - 1)
+        cPos.idx =  current_code.length - 1;
+
     getLineIdx();
     final_code = replaceAt(cPos.idx, '@', [
         genReplacement('"', cPos.clipboardStart),
@@ -528,6 +531,12 @@ function addCharTocode(char, idx = 0) {
 
     current_code = finalStr;
     return;
+}
+function loadCode(newCode) {
+    if (newCode.charAt(newCode.length - 1) === ' ')
+        current_code = newCode;
+    else
+        current_code = newCode + ' ';
 }
 
 // Code stuff
@@ -559,16 +568,16 @@ function replaceAt(idx, char, moreChanges = []) {
 
 // Terminal stuff
 function throwWarn(msg) {
-    terminal_output.innerHTML += `<br><span style="color: #f5e942; text-shadow: 0 0 5px #f5e942;">Warning:<br>   ${msg}</span><br>`;
+    terminal_output.innerHTML += `<br><span style="color: #f5e942; text-shadow: 0 0 5px #f5e942;"><img src="img/warning.png" style="width: 15px; height: 15px; padding-right: 10px;">Warning:<br>   ${msg}</span><br>`;
 }
 function throwError(msg) {
-    terminal_output.innerHTML += `<br><span style="color: #eb4034; text-shadow: 0 0 5px #eb4034;">Error:<br>   ${msg}</span><br>`;
+    terminal_output.innerHTML += `<br><span style="color: #eb4034; text-shadow: 0 0 5px #eb4034;"><img src="img/error.png" style="width: 15px; height: 15px; padding-right: 10px;">Error:<br>   ${msg}</span><br>`;
 }
 function unique_info(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8035e8; text-shadow: 0 0 5px #8035e8;">${msg}</span>`;
 }
 function info(msg) {
-    terminal_output.innerHTML += `<br><span style="color: #e6dabc; text-shadow: 0 0 5px #e6dabc;">${msg}</span>`;
+    terminal_output.innerHTML += `<br><span style="color: #e6dabc; text-shadow: 0 0 5px #e6dabc;"><img src="img/info.png" style="width: 15px; height: 15px; padding-right: 10px;">${msg}</span>`;
 }
 function printTxt(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8f8f8f; text-shadow: 0 0 5px #8f8f8f;">${msg}</span>`;
@@ -581,10 +590,10 @@ function http(msg) {
     var currLooptime = 0;
     for (let res of finalStr) {
         if (maxLooptime > currLooptime) {
-            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">${res}</span>`;
+            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;"><img src="img/connection.png" style="width: 15px; height: 15px; padding-right: 10px;">${res}</span>`;
         }
         else {
-            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;">... (${finalStr.length - 1001} more entries)</span>`;
+            terminal_output.innerHTML += `<br><span style="color: #c8fa70; text-shadow: 0 0 5px #c8fa70;"><img src="img/connection.png" style="width: 15px; height: 15px; padding-right: 10px;">... (${finalStr.length - 1001} more entries)</span>`;
             break;
         }
 
