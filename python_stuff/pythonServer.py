@@ -49,6 +49,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 output = LOADPROJECTS()
             elif _type == 'GETCODE':
                 output = GETCODE(body)
+            else:
+                output = (_type + " is not supported!").encode('utf-8')
                 
             print(output.decode('utf-8'))
             self.wfile.write(output)
