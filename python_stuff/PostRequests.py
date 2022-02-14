@@ -69,5 +69,5 @@ def UPLOADLIB(content):
         file.write(code)
         file.close()
     
-    return f"Successfully uploaded {lib}.sc!".encode('utf-8')
+    return f"Successfully uploaded {lib}!".encode('utf-8')
 
