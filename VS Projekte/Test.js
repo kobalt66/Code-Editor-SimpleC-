@@ -30,19 +30,19 @@ const cPos = {
 }
 
 // Send request to server
-const CurlPythonServer = async (code, address = c.server, func = "POST") => {
+const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => {}) => {
     unique_info(`[${func}] Curl on ${address}`);
 
     if (func === "POST") {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", address);
 
+        // Process data
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
-                // Process data
                 bin.innerHTML = xhr.responseText;
                 var result = bin.innerHTML;
-
+                
                 if (code.type === 'LOADPROJECTS') {
                     bin.innerHTML = '';
                     var projects = result.split(';');
@@ -72,6 +72,8 @@ const CurlPythonServer = async (code, address = c.server, func = "POST") => {
                     bin.innerHTML = '';
                     http(result);
                 }
+
+                onready();
             }
         };
 
@@ -120,7 +122,7 @@ function clickProject(project) {
     loadedProjects.projects[project].open = !loadedProjects.projects[project].open;
     loadFiles();
 }
-function clickScript(project, script) {
+async function clickScript(project, script) {
     cPos.currProject = project;
     cPos.currScript = script;
 
@@ -129,14 +131,14 @@ function clickScript(project, script) {
         project : project,
         script : script    
     }
-    CurlPythonServer(code);
-    console.log(bin.innerHTML);
-    var res = bin.innerHTML;
-    bin.innerHTML = '';
+    await CurlPythonServer(code, c.server, "POST", () => {
+        var res = bin.innerHTML;
+        bin.innerHTML = '';
 
-    current_code = res + ' ';
-    updateCursor(0, false);
-    lexing(final_code);
+        current_code = res + ' ';
+        updateCursor(0, false);
+        lexing(final_code);
+    });
 }
 
 // Editor functions
@@ -556,6 +558,9 @@ function replaceAt(idx, char, moreChanges = []) {
 }
 
 // Terminal stuff
+function throwWarn(msg) {
+    terminal_output.innerHTML += `<br><span style="color: #f5e942; text-shadow: 0 0 5px #f5e942;">Warning:<br>   ${msg}</span><br>`;
+}
 function throwError(msg) {
     terminal_output.innerHTML += `<br><span style="color: #eb4034; text-shadow: 0 0 5px #eb4034;">Error:<br>   ${msg}</span><br>`;
 }
@@ -805,7 +810,11 @@ function init() {
                 }
             case 'KeyS':
                 if (cPos.AltLeft) {
-                    if (cPos.currProject === '' || cPos.currScript === '') break;
+                    if (cPos.currProject === '' || cPos.currScript === '') {
+                        throwWarn("No spcript is opened!");
+                        break;
+                    }
+
                     saveCurrScript();
                     break;
                 }
