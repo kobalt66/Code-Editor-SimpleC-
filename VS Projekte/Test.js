@@ -26,14 +26,17 @@ const cPos = {
     clipboardEnd: undefined,
     clipboardCode: '',
     allowedToType: false,
-    showCurlInfo: true,
+    options : {
+        showCurlInfo: true,
+        autoOrganizeCode: false,
+    },
     currScript: '',
     currProject: ''
 }
 
 // Send request to server
 const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => { }) => {
-    if (cPos.showCurlInfo)
+    if (cPos.options.showCurlInfo)
         unique_info(`[${func}] Curl on ${address}`);
 
     if (func === "POST") {
@@ -181,6 +184,38 @@ function genLine(ln = 0, max_rowIdx = 0) {
     });
 }
 
+function organizeCode() {
+    var chars = Array.from(getCode());
+    var openCBraketCount = 0;
+    var openCBraket = false;
+
+    for (let i = 0; i < chars.length; i++) {
+        if (chars[i] === '{') {
+            openCBraket = true;
+            openCBraketCount++;
+        }
+        if (chars[i] === '}') {
+            openCBraketCount--;
+            openCBraket = openCBraketCount !== 0;
+        }
+
+        if (openCBraket && chars[i] === '\n' && chars[i + 1] !== ' ') {
+            if (openCBraketCount > 0) {
+                var totalCount = openCBraketCount;
+                totalCount = chars[i + 1] === '}' ? totalCount - 1 : totalCount;
+
+                for (let j = 0; j < totalCount; j++)
+                    chars[i] += '   ';
+            }
+        }
+    }
+
+    var finalStr = '';
+    chars.forEach(c => finalStr += c);
+    current_code = finalStr;
+    updateCursor(0, false);
+    lexing(final_code);
+}
 function highlight_code(tokens) {
     var output = '<p>';
     tokens.forEach(token => {
@@ -245,7 +280,6 @@ function highlight_code(tokens) {
     var code = document.getElementById("output");
     code.innerHTML = output;
 }
-
 function lexing(code) {
     // Reset data
     lineData = [];
@@ -547,8 +581,22 @@ function addCharTocode(char, idx = 0) {
     }
 
     for (let i = 0; i < strArray.length; i++) {
-        if (i === idx)
-            finalStr += char;
+        if (i === idx) {
+            switch (char) {
+                case '{':
+                    finalStr += '{}';
+                    break;
+                case '[':
+                    finalStr += '[]';
+                    break;
+                case '(':
+                    finalStr += '()';
+                    break;
+                default:
+                    finalStr += char;
+                    break;
+            }
+        }
 
         finalStr += strArray[i];
     }
@@ -736,7 +784,7 @@ function processTerminal(code) {
                 return;
             }
 
-            cPos.showCurlInfo = (value === 'true');
+            cPos.options.showCurlInfo = (value === 'true');
             info("Showing curl information: " + value);
             break;
     }
@@ -890,6 +938,7 @@ function init() {
                         break;
                     }
 
+                    organizeCode();
                     saveCurrScript();
                     break;
                 }
@@ -965,8 +1014,6 @@ init();
 
 // TODOs:
 /////////////////////////////////////////////////////////////////////////////////////////
-//
-// Automatisches einrücken implementieren.
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
