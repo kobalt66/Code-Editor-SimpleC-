@@ -318,7 +318,10 @@ class Lexer:
 
     def genTokens(self):
         tokens = []
-
+        
+        if "___Global___" in self.text:
+            return [], Error(f'No access to identifier : \'___Global___\'', SYNTAXERROR,  self.pos, self.pos.fn)
+        
         while self.currChar != None:
             if self.currChar in ' \t\n':                # [Space] or [Tab]
                 self.advance()
@@ -1375,31 +1378,13 @@ class Parser:
             res.registerAdvance()
             self.advance()
 
-            if not self.currTok.type == LESS:
+            if not self.currTok.type == STR:
                 return res.failure(
                     Error(
-                        "Expected '<'.", SYNTAXERROR,
-                        self.currTok.start, self.scriptName))
-
-            res.registerAdvance()
-            self.advance()
-
-            if not self.currTok.type == IDENTIFIER:
-                return res.failure(
-                    Error(
-                        "Expected identifier.", SYNTAXERROR,
+                        "Expected string.", SYNTAXERROR,
                         self.currTok.start, self.scriptName))
 
             libName = self.currTok
-            res.registerAdvance()
-            self.advance()
-
-            if not self.currTok.type == GREATER:
-                return res.failure(
-                    Error(
-                        "Expected '>'.", SYNTAXERROR,
-                        self.currTok.start, self.scriptName))
-
             node = MetaCode(IMPORT, libName)
         elif self.currTok.value == DEFINE:
             res.registerAdvance()
@@ -3941,6 +3926,7 @@ class compile2Csharp:
         # keeping track of names
         self.currLib = '' 
         self.currScript = ''
+        self.currImports = []
         self.usings = []
         self.classes = []
         self.structs = []
@@ -4103,7 +4089,9 @@ class compile2Csharp:
         value = var.varName.value
         for const in self.constants:
             if const.accessibility:
-                if const.name == value and const.script.lib == self.currLib:
+                if const.name == value and const.script.lib in self.currImports:
+                    return f'___Global___.{const.script.lib}_{value}'
+                elif const.name == value and const.script.lib == self.currLib:
                     return f'___Global___.{const.script.lib}_{value}'
             if not const.accessibility:
                 if const.name == value and const.script.name == self.currScript:
@@ -4118,6 +4106,10 @@ class compile2Csharp:
     def genBinOp(self, left, op, right):
         opValue = op.value if not op.value == ISEQUALTO else EQEQ
         
+        if op.value == POWER:
+            left = self.genOperationPart(left);
+            right = int(self.genOperationPart(right))
+            return left + f' * {left}' * right;
         if op.value == TOCODE:
             return f'({self.genOperationPart(right)} as {self.genOperationPart(left)})'    
         return f'{self.genOperationPart(left)} {opValue} {self.genOperationPart(right)}'
@@ -4397,7 +4389,9 @@ class compile2Csharp:
             self.structs.append(struct.name.value)
 
         # imports
+        self.currImports = []
         for imp in script.imports:
+            self.currImports.append(imp.value)
             self.write(f'\nusing {imp.value};')
 
         # namespaces
