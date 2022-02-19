@@ -48,7 +48,10 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
 
                 if (code.type === 'LOADPROJECTS') {
                     bin.innerHTML = '';
-                    var projects = result.split(';');
+                    var obj = JSON.parse(result);
+                    if (obj['error'] !== '') throwError(obj['error']);
+
+                    var projects = obj['result'].split(';');
                     loadedProjects = { projects: {} };
 
                     for (let i = 0; i < projects.length; i++) {
@@ -71,9 +74,11 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
                     return;
                 }
 
-                if (code.type !== 'GETCODE') {
+                if ('GETCODE' !== code.type) {
                     bin.innerHTML = '';
-                    http(result);
+                    var obj = JSON.parse(result);
+                    if (obj['error'] !== '') throwError(obj['error']);
+                    http(obj['result']);
                 }
 
                 onready();
@@ -87,12 +92,18 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
         xhr.open("GET", address);
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4)
-                http(xhr.responseText);
+            if (xhr.readyState === 4) {
+                bin.innerHTML = xhr.responseText;
+                var result = bin.innerHTML;
+                bin.innerHTML = '';
+
+                var obj = JSON.parse(result);
+                if (obj['error'] !== '') throwError(obj['error']);
+                http(obj['result']);
+            }
         };
 
         xhr.send(JSON.stringify(code));
-        http(xhr.responseText);
     }
 }
 
@@ -106,8 +117,15 @@ function saveCurrScript() {
             code: getCode()
         }
     };
-    var res = CurlPythonServer(code);
-    http(res);
+    CurlPythonServer(code);
+}
+function compileCurrProject() {
+    const code = {
+        type: "COMPILE",
+        tag: cPos.currProject
+    };
+
+    CurlPythonServer(code);
 }
 function loadFiles() {
     file_viewer.innerHTML = '';
@@ -138,7 +156,10 @@ async function clickScript(project, script) {
         var res = bin.innerHTML;
         bin.innerHTML = '';
 
-        loadCode(res);
+        var obj = JSON.parse(res);
+        if (obj['error'] !== '') throwError(obj['error']);
+
+        loadCode(obj['result']);
         updateCursor(0, false);
         lexing(final_code);
     });
@@ -859,14 +880,7 @@ function init() {
             case 'KeyB':
                 if (cPos.AltLeft) {
                     if (cPos.currProject === '' || cPos.currScript === '') break;
-
-                    const code = {
-                        type: "COMPILE",
-                        tag: cPos.currProject
-                    };
-
-                    var res = CurlPythonServer(code);
-                    http(res);
+                    compileCurrProject();
                     break;
                 }
             case 'KeyS':
@@ -956,17 +970,7 @@ init();
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
-// Error checking when compiling the script!
-//
-// ^ doesn't work in csharp!
-//
 // Saving options like 'curlInfo' to Raspberry PI (automatically)
-//
-// #import <lib> causes html to treat '<lib>' as an html object. Thus it closes the object with '</lib>' at the end of the script automatically.
-//
-// #import doesn't give access to global variables of that library!
-//
-// Block access to ___Global___ class by checking if that class got accessed in the code while building a project!
 //
 // FileReader doesn't work multiple times!
 //
