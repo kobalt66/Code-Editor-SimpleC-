@@ -34,20 +34,15 @@ def SAVESCRIPT(content):
         file.write(code)
         file.close()
 
-    return f"Successfully saved {projectTag}/{scriptTag}!".encode('utf-8')
+    return { 'result' : f"Successfully saved {projectTag}/{scriptTag}!", 'error' : '' }
             
 def COMPILE(content):
     # Process data
     JSON = content.decode('utf-8')
     projectTag = loads(JSON)['tag']
     
-    result = run(projectTag)
-    
-    if result:
-        json = result
-        return json.encode('utf-8')
-    else:
-        return "Successfully compiled the code!".encode('utf-8')
+    result, error = run(projectTag)
+    return { 'result' : result, 'error' : error }
     
 def UPLOADLIB(content):
     # Process data
@@ -69,5 +64,5 @@ def UPLOADLIB(content):
         file.write(code)
         file.close()
     
-    return f"Successfully uploaded {lib}!".encode('utf-8')
+    return { 'result' : f"Successfully uploaded {lib}!", 'error' : '' }
 
