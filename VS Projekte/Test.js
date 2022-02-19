@@ -27,8 +27,7 @@ const cPos = {
     clipboardCode: '',
     allowedToType: false,
     options : {
-        showCurlInfo: true,
-        autoOrganizeCode: false,
+        showCurlInfo: true
     },
     currScript: '',
     currProject: ''
@@ -159,12 +158,20 @@ async function clickScript(project, script) {
         var res = bin.innerHTML;
         bin.innerHTML = '';
 
+        // Load script into the editor
         var obj = JSON.parse(res);
         if (obj['error'] !== '') throwError(obj['error']);
 
         loadCode(obj['result']);
         updateCursor(0, false);
         lexing(final_code);
+
+        // Display lines
+        var str = '';
+        for (let i = 1; i < lineData.length + 1; i++)
+            str += i > 1 ? "\n" + i : i;
+
+        document.getElementById("lines").innerText = str;
     });
 }
 
@@ -845,7 +852,9 @@ function init() {
 
     // Key events
     document.addEventListener('keydown', function (e) {
-        //console.log(e.code);
+        // Deselect any selected object when typeing
+        document.activeElement.blur();
+
         if (e.code === 'Escape') {
             cPos.allowedToType = !cPos.allowedToType;
             unique_info("Allow typing: " + cPos.allowedToType);
