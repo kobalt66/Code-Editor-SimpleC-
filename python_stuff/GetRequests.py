@@ -7,13 +7,8 @@ PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 def RUN():
     # Process data
     result = run(['mcs', 'output.cs'], stdout=PIPE, stderr=PIPE)
-    if not result.stderr == b'':
-        json = result.stderr.decode('utf-8')
-        return json.encode('utf-8')
-                
     result = run(['mono', 'output.exe'], stdout=PIPE, stderr=PIPE)
-    json = result.stderr.decode('utf-8') + "<br><br>" + result.stdout.decode('utf-8')
-    return json.encode('utf-8')
+    return { 'result' : result.stdout.decode('utf-8'), 'error' : result.stderr.decode('utf-8') }
 
 def LOADPROJECTS():
     # Get data from projects
@@ -28,8 +23,8 @@ def LOADPROJECTS():
             output += " " + file
         
         output += ";"
-        
-    return output.encode('utf-8')
+    
+    return { 'result' : output, 'error' : '' }
 
 def GETCODE(content):
     # Get data from script
@@ -42,7 +37,6 @@ def GETCODE(content):
     scriptPath = PROJECTS  + "/" + project + "/" + script
     if path.exists(scriptPath):
         file = open(scriptPath, 'r')
-        return file.read().encode('utf-8')
+        return { 'result' : file.read(), 'error' : '' }
     
-    return f"Something went wrong while getting code {project}/{script}!".encode('utf-8')
-    
+    return { 'result' : '', 'error' : f"Something went wrong while getting code {project}/{script}!" }
