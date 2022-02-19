@@ -1,5 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from json import loads
+from json import loads, dumps
 from sys import argv
 from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB
 from GetRequests import RUN, LOADPROJECTS, GETCODE
@@ -18,12 +18,15 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Mode", "no-cors")
             self.end_headers()
             
-            output = RUN()
-            print(output.decode('utf-8'))
-            self.wfile.write(output)
+            outputJSON = RUN()
+            finalJSON = dumps(outputJSON)
+            print(finalJSON)
+            self.wfile.write(finalJSON.encode('utf-8'))
             
         except Exception as e:
-            self.wfile.write("[GET] Something went wrong while processing the data!".encode('utf-8'))
+            outputJSON = { 'result' : '', 'error' : "[GET] Something went wrong while processing the data: <br>" + str(e) }
+            finalJSON = dumps(outputJSON)
+            self.wfile.write(finalJSON.encode('utf-8'))
             print("Ups, something went wrong!")
             print(e)
         
@@ -40,25 +43,29 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             JSON = body.decode('utf-8')
             _type = loads(JSON)['type']
             
-            output = ''
+            outputJSON = ''
             if _type == 'SAVESCRIPT':
-                output = SAVESCRIPT(body)
+                outputJSON = SAVESCRIPT(body)
             elif _type == 'COMPILE':
-                output = COMPILE(body)
+                outputJSON = COMPILE(body)
             elif _type == 'LOADPROJECTS':
-                output = LOADPROJECTS()
+                outputJSON = LOADPROJECTS()
             elif _type == 'GETCODE':
-                output = GETCODE(body)
+                outputJSON = GETCODE(body)
             elif _type == 'UPLOADLIB':
-                output = UPLOADLIB(body)
+                outputJSON = UPLOADLIB(body)
             else:
-                output = (_type + " is not supported!").encode('utf-8')
-                
-            print(output.decode('utf-8'))
-            self.wfile.write(output)
+                outputJSON = { 'result' : '', 'error' : _type + " is not supported!" }
+            
+            finalJSON = dumps(outputJSON)
+            print(finalJSON)
+            self.wfile.write(finalJSON.encode('utf-8'))
             
         except Exception as e:
-            self.wfile.write((f"[POST] Something went wrong!" + str(e)).encode('utf-8'))
+            outputJSON = { 'result' : '', 'error' : f"[POST] Something went wrong!" + str(e) }
+            finalJSON = dumps(outputJSON)
+            self.wfile.write(finalJSON.encode('utf-8'))
+    
 
 if len(argv) > 1:
     arg = argv[1].split(':')
