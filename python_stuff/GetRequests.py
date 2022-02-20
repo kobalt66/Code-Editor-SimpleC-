@@ -2,6 +2,7 @@ from subprocess import call, run, PIPE
 from os import path, mkdir, listdir
 from json import loads
 
+CMDOPTIONS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/cmdoptions.txt'
 PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 
 def RUN():
@@ -40,3 +41,13 @@ def GETCODE(content):
         return { 'result' : file.read(), 'error' : '' }
     
     return { 'result' : '', 'error' : f"Something went wrong while getting code {project}/{script}!" }
+
+def GETCMDOPTIONS():
+    # Get cmd options
+    if path.exists(CMDOPTIONS):
+        file = open(CMDOPTIONS, 'r')
+        result = { 'result' : file.read(), 'error' : '' }
+        file.close()
+        return result
+    else:
+        return { 'result' : '', 'error' : "Command options file doesn't exist!" }
