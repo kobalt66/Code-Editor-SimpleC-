@@ -46,7 +46,7 @@ def GETCMDOPTIONS():
     # Get cmd options
     if path.exists(CMDOPTIONS):
         file = open(CMDOPTIONS, 'r')
-        result = { 'result' : file.read(), 'error' : '' }
+        result = { 'result' : loads(file.read()), 'error' : '' }
         file.close()
         return result
     else:
