@@ -885,7 +885,13 @@ function init() {
         // Deselect any selected object when typeing
         if (document.activeElement.id !== "terminal_input")
             document.activeElement.blur();
-
+        
+        // If typing into terminal deny editor control
+        if (document.activeElement.id === "terminal_input" && cPos.allowedToType) {
+            cPos.allowedToType = false;
+            unique_info("Allow typing: " + cPos.allowedToType);
+        }
+        
         if (e.code === 'Escape') {
             cPos.allowedToType = !cPos.allowedToType;
             unique_info("Allow typing: " + cPos.allowedToType);
