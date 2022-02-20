@@ -2,6 +2,7 @@ from json import loads
 from os import path, mkdir
 from SimpleC import runScript, run
 
+CMDOPTIONS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/cmdoptions.txt'
 PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 LIBRARIES = "/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Libraries"
 
@@ -65,4 +66,22 @@ def UPLOADLIB(content):
         file.close()
     
     return { 'result' : f"Successfully uploaded {lib}!", 'error' : '' }
+
+def SETCMDOPTIONS(content):
+    # Process data
+    JSON = content.decode('utf-8')
+    obj = loads(JSON)
+    options = obj['options']
+    
+    # Safe cmd options
+    if not path.exists(CMDOPTIONS):
+        file = open(CMDOPTIONS, 'x')
+        file.write(str(options))
+        file.close()
+    else:
+        file = open(CMDOPTIONS, 'w')
+        file.write(str(options))
+        file.close()
+    
+    return { 'result' : "Command options safed...", 'error' : '' } 
 
