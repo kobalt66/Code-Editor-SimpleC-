@@ -1,8 +1,8 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from json import loads, dumps
 from sys import argv
-from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB
-from GetRequests import RUN, LOADPROJECTS, GETCODE
+from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB, SETCMDOPTIONS
+from GetRequests import RUN, LOADPROJECTS, GETCODE, GETCMDOPTIONS
 
 BIND_HOST = '192.168.178.58'
 PORT = 8008
@@ -20,11 +20,15 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             
             outputJSON = RUN()
             finalJSON = dumps(outputJSON)
-            print(finalJSON)
+            print('\n\nError: ', outputJSON['error'])
+            print('\nResult: ', outputJSON['result'])
             self.wfile.write(finalJSON.encode('utf-8'))
             
         except Exception as e:
-            outputJSON = { 'result' : '', 'error' : "[GET] Something went wrong while processing the data: <br>" + str(e) }
+            outputJSON = { 'result' : '', 'error' : "[GET] Something went wrong while processing the data: <br> " + str(e) }
+            print('\n\nError: ', outputJSON['error'])
+            print('\nResult: ', outputJSON['result'])
+            
             finalJSON = dumps(outputJSON)
             self.wfile.write(finalJSON.encode('utf-8'))
             print("Ups, something went wrong!")
@@ -54,15 +58,23 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 outputJSON = GETCODE(body)
             elif _type == 'UPLOADLIB':
                 outputJSON = UPLOADLIB(body)
+            elif _type == 'SETCMDOPTIONS':
+                outputJSON = SETCMDOPTIONS(body)
+            elif _type == 'GETCMDOPTIONS':
+                outputJSON = GETCMDOPTIONS()
             else:
                 outputJSON = { 'result' : '', 'error' : _type + " is not supported!" }
             
             finalJSON = dumps(outputJSON)
-            print(finalJSON)
+            print('\n\nError: ', outputJSON['error'])
+            print('\nResult: ', outputJSON['result'])
             self.wfile.write(finalJSON.encode('utf-8'))
             
         except Exception as e:
-            outputJSON = { 'result' : '', 'error' : f"[POST] Something went wrong!" + str(e) }
+            outputJSON = { 'result' : '', 'error' : f"[POST] Something went wrong! <br> " + str(e) }
+            print('\n\nError: ', outputJSON['error'])
+            print('\nResult: ', outputJSON['result'])
+            
             finalJSON = dumps(outputJSON)
             self.wfile.write(finalJSON.encode('utf-8'))
     
