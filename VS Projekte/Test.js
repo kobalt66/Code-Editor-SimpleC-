@@ -735,7 +735,11 @@ function processTerminal(code) {
         };
     };
 
-    var obj = null;
+    var obj = {
+        returnVal: undefined,
+        address: undefined,
+        printRes: false
+    };
     switch (items[0]) {
         case 'load':
             obj = Args(items);
