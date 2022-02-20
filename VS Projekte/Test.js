@@ -76,7 +76,7 @@ const CurlPythonServer = async (code, address = c.server, func = "POST", onready
                     return;
                 }
 
-                if ('GETCODE' !== code.type) {
+                if (!['GETCODE', 'GETCMDOPTIONS'].includes(code.type)) {
                     bin.innerHTML = '';
                     var obj = JSON.parse(result);
                     if (obj['error'] !== '') throwError(obj['error']);
@@ -793,10 +793,31 @@ function processTerminal(code) {
 
             cPos.options.showCurlInfo = (value === 'true');
             info("Showing curl information: " + value);
+            sendCmdOptions();
             break;
     }
 
     if (obj.printRes) printTxt(obj.returnVal);
+}
+function sendCmdOptions() {
+    const code = {
+        type : "SETCMDOPTIONS",
+        options : cPos.options
+    }
+    CurlPythonServer(code);
+}
+async function getCmdOptions() {
+    const code = {
+        type : "GETCMDOPTIONS"
+    }
+    await CurlPythonServer(code, c.server, 'POST', () => {
+        var res = bin.innerHTML;
+        bin.innerHTML = '';
+
+        // Load script into the editor
+        var obj = JSON.parse(res);
+        if (obj['error'] !== '') throwError(obj['error']);
+    });
 }
 
 // Initializing code
@@ -809,9 +830,10 @@ function bodyInit() {
     realFileBtn = document.getElementById("real-file");
     uploadLib = document.getElementById("uploadLib");
 
-    // Loading projects
+    // Loading server data
     const code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
+    getCmdOptions();
 
     // Object Events
     uploadLib.addEventListener("click", function () {
@@ -853,7 +875,8 @@ function init() {
     // Key events
     document.addEventListener('keydown', function (e) {
         // Deselect any selected object when typeing
-        document.activeElement.blur();
+        if (document.activeElement.id !== "terminal_input")
+            document.activeElement.blur();
 
         if (e.code === 'Escape') {
             cPos.allowedToType = !cPos.allowedToType;
@@ -1025,8 +1048,6 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
-//
-// Saving options like 'curlInfo' to Raspberry PI (automatically)
 //
 // FileReader doesn't work multiple times!
 //
