@@ -818,11 +818,12 @@ async function getCmdOptions() {
         var res = bin.innerHTML;
         bin.innerHTML = '';
 
-        // Load script into the editor
+        // Loading options
         var obj = JSON.parse(res);
+        var options = obj['result'];
         if (obj['error'] !== '') throwError(obj['error']);
 
-        var options = obj['result'];
+        // Setting option values
         cPos.options.showCurlInfo = options.showCurlInfo;
     });
 }
