@@ -783,6 +783,20 @@ function processTerminal(code) {
         case 'clear':
             terminal_output.innerHTML = '';
             return;
+        case 'create':
+            obj = Args(items);
+
+            if (!obj.returnVal) {
+                throwError("Log command needs a value to log!");
+                return;
+            }
+
+            const Code = {
+                type : "CREATEFILE",
+                file : obj.returnVal
+            };
+            CurlPythonServer(Code);
+            break;
         case 'curlInfo':
             if (items.length < 2) {
                 throwError("CurlInfor command needs value.");
@@ -883,7 +897,7 @@ function init() {
     // Key events
     document.addEventListener('keydown', function (e) {
         // Deselect any selected object when typeing
-        if (document.activeElement.id !== "terminal_input")
+        if (!["terminal_input", "cF-Input"].includes(document.activeElement.id))
             document.activeElement.blur();
         
         // If typing into terminal deny editor control
@@ -980,7 +994,7 @@ function init() {
             case 'KeyS':
                 if (cPos.AltLeft) {
                     if (cPos.currProject === '' || cPos.currScript === '') {
-                        throwWarn("No spcript is opened!");
+                        throwWarn("No script is opened!");
                         break;
                     }
 
