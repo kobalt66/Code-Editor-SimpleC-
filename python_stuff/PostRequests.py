@@ -1,4 +1,4 @@
-from json import loads
+from json import loads, dumps
 from os import path, mkdir
 from SimpleC import runScript, run
 
@@ -76,11 +76,11 @@ def SETCMDOPTIONS(content):
     # Safe cmd options
     if not path.exists(CMDOPTIONS):
         file = open(CMDOPTIONS, 'x')
-        file.write(str(options))
+        file.write(dumps(options))
         file.close()
     else:
         file = open(CMDOPTIONS, 'w')
-        file.write(str(options))
+        file.write(dumps(options))
         file.close()
     
     return { 'result' : "Command options safed...", 'error' : '' } 
