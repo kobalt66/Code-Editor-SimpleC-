@@ -817,6 +817,9 @@ async function getCmdOptions() {
         // Load script into the editor
         var obj = JSON.parse(res);
         if (obj['error'] !== '') throwError(obj['error']);
+
+        var options = obj['result'];
+        cPos.options.showCurlInfo = options.showCurlInfo;
     });
 }
 
