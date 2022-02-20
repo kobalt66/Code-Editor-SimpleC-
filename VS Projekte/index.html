@@ -69,10 +69,11 @@
             <textarea class="terminal_input" id="terminal_input" name="terminal_input"></textarea>
         </div>
     </div>
-    <div id="createFile" class="search-wrapper">
-        <div id="createFile_input-holder" class="input-holder">
-            <input type="text" class="search-input" placeholder="Type to search" />
-            <button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
+
+    <div id="cF" class="search-wrapper">
+        <div class="input-holder">
+            <input id="cF-Input" type="text" class="search-input" placeholder="Enter file path..." />
+            <button class="search-icon" onclick="searchToggle(this, event);"><span><img class="addFileImg" src="img/create_file.png" height="40px" style="margin-top: 5px"></span></button>
         </div>
         <span class="close" onclick="searchToggle(this, event);"></span>
     </div>
