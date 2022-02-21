@@ -8,6 +8,9 @@ PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
 def RUN():
     # Process data
     result = run(['mcs', 'output.cs'], stdout=PIPE, stderr=PIPE)
+    if not result.stderr == b'':
+        return { 'result' : result.stdout.decode('utf-8'), 'error' : result.stderr.decode('utf-8') }
+    
     result = run(['mono', 'output.exe'], stdout=PIPE, stderr=PIPE)
     return { 'result' : result.stdout.decode('utf-8'), 'error' : result.stderr.decode('utf-8') }
 
