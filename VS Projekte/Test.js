@@ -174,6 +174,13 @@ async function clickScript(project, script) {
         document.getElementById("lines").innerText = str;
     });
 }
+export function submitFile(path) {
+    const code = {
+        type : "SUBMITFILE",
+        path : path
+    }
+    CurlPythonServer(code);
+}
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -646,7 +653,7 @@ function replaceAt(idx, char, moreChanges = []) {
 }
 
 // Terminal stuff
-function throwWarn(msg) {
+export function throwWarn(msg) {
     terminal_output.innerHTML += `<br><span style="color: #f5e942; text-shadow: 0 0 5px #f5e942;"><img src="img/warning.png" style="width: 15px; height: 15px; padding-right: 10px;">Warning:<br>   ${msg}</span><br>`;
 }
 function throwError(msg) {
@@ -900,8 +907,8 @@ function init() {
         if (!["terminal_input", "cF-Input"].includes(document.activeElement.id))
             document.activeElement.blur();
         
-        // If typing into terminal deny editor control
-        if (document.activeElement.id === "terminal_input" && cPos.allowedToType) {
+        // Deny editor control when specific elements are selected
+        if (["terminal_input", "cF-Input"].includes(document.activeElement.id) && cPos.allowedToType) {
             cPos.allowedToType = false;
             unique_info("Allow typing: " + cPos.allowedToType);
         }
@@ -1078,5 +1085,9 @@ init();
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
 // FileReader doesn't work multiple times!
+//
+// Be able to add and remove files
+//
+// Change the looks of the scrollbars
 //
 /////////////////////////////////////////////////////////////////////////////////////////
