@@ -83,5 +83,38 @@ def SETCMDOPTIONS(content):
         file.write(dumps(options))
         file.close()
     
-    return { 'result' : "Command options safed...", 'error' : '' } 
+    return { 'result' : "Command options safed...", 'error' : '' }
+
+def SUBMITFILE(content):
+    # Process data
+    JSON = content.decode('utf-8')
+    obj = loads(JSON)
+    _path = obj['path']
+    
+    # Getting the file path
+    components = _path.split('/')
+    filePath = ''
+    fileType = ''
+    if len(components) == 1:
+        filePath = PROJECTS + '/' + components[0]
+        fileType = 'project'
+    elif len(components) == 2:
+        if not '.sc' in components[1]:
+            return { 'result' : "", 'error' : "Please use the right script format ('.sc')" }     
+        
+        filePath = PROJECTS + '/' + components[0] + '/' + components[1]
+        fileType = 'script'
+    else:
+        return { 'result' : "", 'error' : 'You are not allowed to have dictionaries inside a dictionary!' } 
+        
+    # Create the file
+    if not path.exists(filePath) and fileType == 'script':
+        file = open(filePath, 'x')
+        file.write('// Write your code here...')
+        file.close()
+    elif not path.exists(filePath) and fileType == 'project':
+        mkdir(filePath)
+    else:
+        return { 'result' : "", 'error' : f'The file ( {filePath} ) allready exists!' }
+    return { 'result' : f"Successfully created the file! ( {filePath} )", 'error' : '' } 
 
