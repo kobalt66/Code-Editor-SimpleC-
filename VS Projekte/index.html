@@ -7,22 +7,10 @@
     <link href="button.css" rel="stylesheet" />
     <link href="createFile.css" rel="stylesheet" />
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="Constant.js" type="module"></script>
     <script src="Test.js" type="module"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script language="JavaScript" type="text/javascript">
-        function searchToggle(obj, evt) {
-            var container = $(obj).closest('.search-wrapper');
-            if (!container.hasClass('active')) {
-                container.addClass('active');
-                evt.preventDefault();
-            }
-            else if (container.hasClass('active') && $(obj).closest('.input-holder').length == 0) {
-                container.removeClass('active');
-                container.find('.search-input').val('');
-            }
-        }
-    </script>
+    <script src="filesubmit.js" type="module"></script>
 
     <link rel="icon" href="img/Logo.png">
     <title>Code Editor - SimpleC</title>
