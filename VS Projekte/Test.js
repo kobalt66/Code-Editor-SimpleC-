@@ -8,6 +8,8 @@ var final_code = '';
 var clipboard = '';
 
 var loadedProjects = {};
+var projectCount = 0;
+var fileCount = 0;
 
 var bin = null;
 var terminal_input = null;
@@ -131,14 +133,32 @@ function compileCurrProject() {
 }
 function loadFiles() {
     file_viewer.innerHTML = '';
+    projectCount = 0;
+    fileCount = 0;
 
     for (let project in loadedProjects.projects) {
-        file_viewer.innerHTML += `<button class="file folder" role="button" onclick="clickProject('${project}')"><img src="img/folder.png" style="width: 15px; height: 15px;">${project}</button>`;
+        projectCount++;
+        file_viewer.innerHTML += `<button id="_p${projectCount}" class="file folder" role="button" onclick="clickProject('${project}')"><img src="img/folder.png" style="width: 15px; height: 15px;">${project}</button>`;
         const currProject = loadedProjects.projects[project];
 
         if (currProject.open)
-            for (let file of currProject.files)
-                file_viewer.innerHTML += `<button class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+            for (let file of currProject.files) {
+                fileCount++;
+                file_viewer.innerHTML += `<button id="_f${fileCount}" class="file" role="button" onclick="clickScript('${project}', '${file}')" style="padding-left: 30px"><img src="img/SimpleC_icon.png" style="width: 10px; height: 10px;">${file}</button>`;
+            }
+    }
+}
+function removeFiles() {
+    loadedProjects = {};
+    for (let i = 1; i < fileCount + 1; i++) {
+        var file = document.getElementById(`_f${i}`);
+        if (file !== undefined)
+            file.remove();
+    }
+    for (let i = 1; i < projectCount + 1; i++) {
+        var project = document.getElementById(`_p${i}`);
+        if (project !== undefined)
+            project.remove();
     }
 }
 function clickProject(project) {
@@ -174,11 +194,15 @@ async function clickScript(project, script) {
         document.getElementById("lines").innerText = str;
     });
 }
-export function submitFile(path) {
-    const code = {
+export async function submitFile(path) {
+    var code = {
         type : "SUBMITFILE",
         path : path
     }
+    await CurlPythonServer(code);
+    removeFiles();
+    
+    var code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
 }
 
@@ -1086,7 +1110,7 @@ init();
 //
 // FileReader doesn't work multiple times!
 //
-// Be able to add and remove files
+// Be able to remove files
 //
 // Change the looks of the scrollbars
 //
