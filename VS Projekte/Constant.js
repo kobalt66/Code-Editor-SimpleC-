@@ -154,7 +154,7 @@ const EOF = 'endoffile';
 
 const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const digits = '0123456789';
-const letters_digits = letters + digits;
+export const letters_digits = letters + digits;
 
 const server = "http://192.168.178.58:8008";
 const origin = "http://192.168.178.125:3000";
@@ -295,7 +295,8 @@ const commands = [
     "log",
     "run",
     "clear",
-    "curlInfo"
+    "curlInfo",
+    "create"
 ];
 const command_tokens = [
     '-d',
