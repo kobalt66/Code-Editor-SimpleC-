@@ -23,6 +23,16 @@ h4 {
     border: 5px dotted rgb(255, 207, 207) ;
     color:rgb(235, 235, 235);
 }
+h5 {
+    font-family: 'Overpass Mono', monospace;
+    float: right;
+    width: auto;
+    height: 10px;
+    margin-bottom: 0%;
+    margin-top: 5px;
+    margin-right: 10px;
+    color:rgb(143, 180, 175);
+}
 
 p {
     width: 100%;
@@ -61,7 +71,9 @@ ul {
 }
 
 .line_nums {
-    width: 3%;
+    min-width: 3%;
+    margin-left: 0px;
+    width: auto;
     height: auto;
     position: static;
     background-color: #313131;
