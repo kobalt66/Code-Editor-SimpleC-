@@ -895,6 +895,12 @@ function bodyInit() {
     realFileBtn = document.getElementById("real-file");
     uploadLib = document.getElementById("uploadLib");
 
+    // Terminal information
+    info("Called init function.");
+    info("///////////////////////////////////////////");
+    info("  Welcome to the SimpleC Code Editor v0.9.2");
+    info("///////////////////////////////////////////<br><br>");
+
     // Loading server data
     const code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
