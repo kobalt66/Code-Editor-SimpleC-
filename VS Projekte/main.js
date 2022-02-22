@@ -661,6 +661,8 @@ function loadCode(newCode) {
         current_code = newCode;
     else
         current_code = newCode + ' ';
+
+    document.getElementById("currFile").innerHTML = cPos.currProject + "/" + cPos.currScript;
 }
 
 // Code stuff
