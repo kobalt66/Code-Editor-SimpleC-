@@ -212,7 +212,10 @@ async function deleteFile(path) {
     }
     await CurlPythonServer(code);
     removeFiles();
-    
+
+    cPos.currScript = '';
+    cPos.currProject = '';
+    loadCode('');
     var code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
 }
@@ -1117,6 +1120,6 @@ init();
 //
 // FileReader doesn't work multiple times!
 //
-// Change the looks of the scrollbars
+// Be able to delete libraries ('rmlib' command) 
 //
 /////////////////////////////////////////////////////////////////////////////////////////
