@@ -15,7 +15,7 @@ header {
 h4 {
     font-family: 'Montserrat';
     float: right;
-    width: 100px;
+    width: auto;
     height: 10px;
     padding-bottom: 10px;
     margin-bottom: 0%;
