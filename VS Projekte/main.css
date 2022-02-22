@@ -135,7 +135,7 @@ ul {
 }
 
 .terminal_input {
-    background-color: rgb(51, 51, 51);
+    background-color: rgb(44, 44, 44);
     margin: 0;
     min-height: 2vh;
     max-height: 2vh;
@@ -143,8 +143,9 @@ ul {
     max-width: 99%;
     overflow: hidden;
     color: white;
+    border:none;
     font: 1.3rem Inconsolata, monospace;
-    text-shadow: 0 0 5px #C8C8C8;
+    text-shadow: 0 0 1px #C8C8C8;
     font-size: 15px;
 }
 textarea::after {
