@@ -902,6 +902,7 @@ function bodyInit() {
     info("///////////////////////////////////////////<br><br>");
 
     // Loading server data
+    cPos.options.showCurlInfo = false;
     const code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
     getCmdOptions();
