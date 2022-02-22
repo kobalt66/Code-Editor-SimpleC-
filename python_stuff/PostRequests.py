@@ -1,5 +1,5 @@
 from json import loads, dumps
-from os import path, mkdir
+from os import path, mkdir, rmdir, listdir, remove
 from SimpleC import runScript, run
 
 CMDOPTIONS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/cmdoptions.txt'
@@ -118,3 +118,36 @@ def SUBMITFILE(content):
         return { 'result' : "", 'error' : f'The file ( {filePath} ) allready exists!' }
     return { 'result' : f"Successfully created the file! ( {filePath} )", 'error' : '' } 
 
+def DELETEFILE(content):
+    # Process data
+    JSON = content.decode('utf-8')
+    obj = loads(JSON)
+    _path = obj['path']
+    
+    # Delete the file
+    components = _path.split('/')
+    filePath = ''
+    fileType = ''
+    if len(components) == 1:
+        filePath = PROJECTS + '/' + components[0]
+        fileType = 'project'
+    elif len(components) == 2:
+        if not '.sc' in components[1]:
+            return { 'result' : "", 'error' : "Please use the right script format ('.sc')" }     
+        
+        filePath = PROJECTS + '/' + components[0] + '/' + components[1]
+        fileType = 'script'
+    
+    filePath = filePath.replace(' ', '')
+    if fileType == 'script':
+        remove(filePath)
+    elif fileType == 'project':
+        try:
+            rmdir(filePath)
+        except:
+            files = listdir(filePath)
+            for f in files:
+                remove(filePath + '/' + f)
+            rmdir(filePath)
+        
+    return { 'result' : f"Successfully removed the file! ( {filePath} )", 'error' : '' } 
