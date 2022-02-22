@@ -205,6 +205,17 @@ export async function submitFile(path) {
     var code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
 }
+async function deleteFile(path) {
+    var code = {
+        type : "DELETEFILE",
+        path : path
+    }
+    await CurlPythonServer(code);
+    removeFiles();
+    
+    var code = { type: "LOADPROJECTS" };
+    CurlPythonServer(code);
+}
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -736,7 +747,6 @@ function processTerminal(code) {
         for (let i = 1; i < args.length; i++) {
             switch (args[i]) {
                 case '-d':
-                    info("Loading code");
                     for (let j = i + 1; j < args.length; j++)
                         returnVal += args[j] + ' ';
 
@@ -774,6 +784,7 @@ function processTerminal(code) {
     switch (items[0]) {
         case 'load':
             obj = Args(items);
+            info("Loading code");
 
             current_code = obj.returnVal + ' ';
             updateCursor(0, false);
@@ -814,19 +825,15 @@ function processTerminal(code) {
         case 'clear':
             terminal_output.innerHTML = '';
             return;
-        case 'create':
+        case 'rmfile':
             obj = Args(items);
 
             if (!obj.returnVal) {
-                throwError("Log command needs a value to log!");
+                throwError("Rmfile command needs a file path!");
                 return;
             }
 
-            const Code = {
-                type : "CREATEFILE",
-                file : obj.returnVal
-            };
-            CurlPythonServer(Code);
+            deleteFile(obj.returnVal);
             break;
         case 'curlInfo':
             if (items.length < 2) {
@@ -1109,8 +1116,6 @@ init();
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
 // FileReader doesn't work multiple times!
-//
-// Be able to remove files
 //
 // Change the looks of the scrollbars
 //
