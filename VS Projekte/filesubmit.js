@@ -1,5 +1,5 @@
 import { letters_digits } from "./Constant.js"
-import { throwWarn, submitFile } from "./Test.js"
+import { throwWarn, submitFile } from "./main.js"
 
 window.searchToggle = searchToggle;
 
