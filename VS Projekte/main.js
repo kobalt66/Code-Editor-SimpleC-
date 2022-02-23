@@ -230,7 +230,7 @@ function submitLib(event) {
             }
             CurlPythonServer(code);
         });
-        reader.readAsDataURL(event.target.files[0]);
+        reader.readAsText(event.target.files[0]);
         realFileBtn.value = "";
     }
 }
@@ -944,7 +944,7 @@ function bodyInit() {
     // Terminal information
     info("Called init function.");
     info("///////////////////////////////////////////");
-    info("  Welcome to the SimpleC Code Editor v0.9.2");
+    info("  Welcome to the SimpleC Code Editor v0.9.5");
     info("///////////////////////////////////////////<br><br>");
 
     // Loading server data
