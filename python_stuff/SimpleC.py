@@ -4579,7 +4579,7 @@ class compile2Csharp:
         value = var.value.value.value
         if var.value.type == FLT:
             return str(value) + 'f'
-        elif isinstance(value, str):
+        elif isinstance(value, STR):
             return f'"{value}"' if len(value) > 1 else f"'{value}'"
         else:
             return var.value.value.value
