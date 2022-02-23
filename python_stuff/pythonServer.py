@@ -1,7 +1,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from json import loads, dumps
 from sys import argv
-from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB, SETCMDOPTIONS, SUBMITFILE
+from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB, SETCMDOPTIONS, SUBMITFILE, DELETEFILE, DELETELIB
 from GetRequests import RUN, LOADPROJECTS, GETCODE, GETCMDOPTIONS
 
 BIND_HOST = '192.168.178.58'
@@ -64,6 +64,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 outputJSON = GETCMDOPTIONS()
             elif _type == 'SUBMITFILE':
                 outputJSON = SUBMITFILE(body)
+            elif _type == 'DELETEFILE':
+                outputJSON = DELETEFILE(body)
+            elif _type == 'DELETELIB':
+                outputJSON = DELETELIB
             else:
                 outputJSON = { 'result' : '', 'error' : _type + " is not supported!" }
             
