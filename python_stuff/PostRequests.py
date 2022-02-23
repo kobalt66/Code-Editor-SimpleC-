@@ -150,4 +150,20 @@ def DELETEFILE(content):
                 remove(filePath + '/' + f)
             rmdir(filePath)
         
-    return { 'result' : f"Successfully removed the file! ( {filePath} )", 'error' : '' } 
+    return { 'result' : f"Successfully removed the file! ( {filePath} )", 'error' : '' }
+
+def DELETELIB(content):
+    # Process data
+    JSON = content.decode('utf-8')
+    obj = loads(JSON)
+    lib = obj['lib']
+    
+    # Delete the file
+    if not '.sc' in lib:
+        return { 'result' : "", 'error' : "Please use the right script format ('.sc')" }
+    
+    filePath = LIBRARIES + '/' + lib
+    filePath = filePath.replace(' ', '')
+    remove(filePath)
+        
+    return { 'result' : f"Successfully removed the '{lib}' library!", 'error' : '' } 
