@@ -296,7 +296,8 @@ const commands = [
     "run",
     "clear",
     "curlInfo",
-    "rmfile"
+    "rmfile",
+    "rmlib"
 ];
 const command_tokens = [
     '-d',
