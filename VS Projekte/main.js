@@ -212,6 +212,10 @@ function submitLib(event) {
             throwError(`The format of ${file} is not supported!<br>You can only upload .txt files.`);
             return;
         }
+        if (!file.includes('.sc')) {
+            throwError(`Please use the right script format for ${file}!<br>Use the '.sc' format.`);
+            return;
+        }
 
         var reader = new FileReader();
         reader.addEventListener('load', (event) => {
@@ -953,7 +957,7 @@ function bodyInit() {
     uploadLib.addEventListener("click", function () {
         realFileBtn.click();
     });
-    realFileBtn.addEventListener("change", function (event) { 
+    realFileBtn.addEventListener("change", function (event) {
         submitLib(event);
     });
 }
