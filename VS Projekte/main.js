@@ -28,7 +28,7 @@ const cPos = {
     clipboardEnd: undefined,
     clipboardCode: '',
     allowedToType: false,
-    options : {
+    options: {
         showCurlInfo: true
     },
     currScript: '',
@@ -36,7 +36,7 @@ const cPos = {
 }
 
 // Send request to server
-const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => { }) => {
+export const CurlPythonServer = async (code, address = c.server, func = "POST", onready = () => { }) => {
     if (cPos.options.showCurlInfo)
         unique_info(`[${func}] Curl on ${address}`);
 
@@ -196,19 +196,44 @@ async function clickScript(project, script) {
 }
 export async function submitFile(path) {
     var code = {
-        type : "SUBMITFILE",
-        path : path
+        type: "SUBMITFILE",
+        path: path
     }
     await CurlPythonServer(code);
     removeFiles();
-    
+
     var code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
 }
+function submitLib(event) {
+    if (realFileBtn.value) {
+        const file = realFileBtn.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
+        if (!file.includes('.txt')) {
+            throwError(`The format of ${file} is not supported!<br>You can only upload .txt files.`);
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+            const result = event.target.result;
+
+            var fileParts = file.split('.');
+            info("Uploading: " + fileParts[0] + '.' + fileParts[1]);
+            const code = {
+                type: "UPLOADLIB",
+                lib: fileParts[0] + '.' + fileParts[1],
+                code: result
+            }
+            CurlPythonServer(code);
+        });
+        reader.readAsDataURL(event.target.files[0]);
+        realFileBtn.value = "";
+    }
+}
 async function deleteFile(path) {
     var code = {
-        type : "DELETEFILE",
-        path : path
+        type: "DELETEFILE",
+        path: path
     }
     await CurlPythonServer(code);
     removeFiles();
@@ -221,8 +246,8 @@ async function deleteFile(path) {
 }
 async function deleteLib(lib) {
     var code = {
-        type : "DELETELIB",
-        lib : lib
+        type: "DELETELIB",
+        lib: lib
     }
     await CurlPythonServer(code);
 }
@@ -703,19 +728,19 @@ function replaceAt(idx, char, moreChanges = []) {
 export function throwWarn(msg) {
     terminal_output.innerHTML += `<br><span style="color: #f5e942; text-shadow: 0 0 5px #f5e942;"><img src="img/warning.png" style="width: 15px; height: 15px; padding-right: 10px;">Warning:<br>   ${msg}</span><br>`;
 }
-function throwError(msg) {
+export function throwError(msg) {
     terminal_output.innerHTML += `<br><span style="color: #eb4034; text-shadow: 0 0 5px #eb4034;"><img src="img/error.png" style="width: 15px; height: 15px; padding-right: 10px;">Error:<br>   ${msg}</span><br>`;
 }
-function unique_info(msg) {
+export function unique_info(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8035e8; text-shadow: 0 0 5px #8035e8;">${msg}</span>`;
 }
-function info(msg) {
+export function info(msg) {
     terminal_output.innerHTML += `<br><span style="color: #e6dabc; text-shadow: 0 0 5px #e6dabc;"><img src="img/info.png" style="width: 15px; height: 15px; padding-right: 10px;">${msg}</span>`;
 }
-function printTxt(msg) {
+export function printTxt(msg) {
     terminal_output.innerHTML += `<br><span style="color: #8f8f8f; text-shadow: 0 0 5px #8f8f8f;">${msg}</span>`;
 }
-async function http(msg) {
+export async function http(msg) {
     if (!msg) return;
     var finalStr = msg.split('\n');
 
@@ -879,14 +904,14 @@ function processTerminal(code) {
 }
 function sendCmdOptions() {
     const code = {
-        type : "SETCMDOPTIONS",
-        options : cPos.options
+        type: "SETCMDOPTIONS",
+        options: cPos.options
     }
     CurlPythonServer(code);
 }
 async function getCmdOptions() {
     const code = {
-        type : "GETCMDOPTIONS"
+        type: "GETCMDOPTIONS"
     }
     await CurlPythonServer(code, c.server, 'POST', () => {
         var res = bin.innerHTML;
@@ -928,28 +953,8 @@ function bodyInit() {
     uploadLib.addEventListener("click", function () {
         realFileBtn.click();
     });
-    realFileBtn.addEventListener("change", function (event) {
-        if (realFileBtn.value) {
-            const file = realFileBtn.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
-            if (!file.includes('.txt')) {
-                throwError(`The format of ${file} is not supported!<br>You can only upload .txt files.`);
-                return;
-            }
-
-            const reader = new FileReader()
-            reader.onload = (e) => {
-                info("Uploading: " + file);
-
-                var fileParts = file.split('.');
-                const code = {
-                    type: "UPLOADLIB",
-                    lib: fileParts[0] + '.' + fileParts[1],
-                    code: e.target.result
-                }
-                CurlPythonServer(code);
-            }
-            reader.readAsText(event.target.files[0]);
-        }
+    realFileBtn.addEventListener("change", function (event) { 
+        submitLib(event);
     });
 }
 function init() {
@@ -966,13 +971,13 @@ function init() {
         // Deselect any selected object when typeing
         if (!["terminal_input", "cF-Input"].includes(document.activeElement.id))
             document.activeElement.blur();
-        
+
         // Deny editor control when specific elements are selected
         if (["terminal_input", "cF-Input"].includes(document.activeElement.id) && cPos.allowedToType) {
             cPos.allowedToType = false;
             unique_info("Allow typing: " + cPos.allowedToType);
         }
-        
+
         if (e.code === 'Escape') {
             cPos.allowedToType = !cPos.allowedToType;
             unique_info("Allow typing: " + cPos.allowedToType);
@@ -1143,7 +1148,5 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
-//
-// FileReader doesn't work multiple times!
 //
 /////////////////////////////////////////////////////////////////////////////////////////
