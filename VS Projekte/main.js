@@ -219,6 +219,13 @@ async function deleteFile(path) {
     var code = { type: "LOADPROJECTS" };
     CurlPythonServer(code);
 }
+async function deleteLib(lib) {
+    var code = {
+        type : "DELETELIB",
+        lib : lib
+    }
+    await CurlPythonServer(code);
+}
 
 // Editor functions
 function genTok(idx, row, value, type) {
@@ -840,6 +847,16 @@ function processTerminal(code) {
 
             deleteFile(obj.returnVal);
             break;
+        case 'rmlib':
+            obj = Args(items);
+
+            if (!obj.returnVal) {
+                throwError("Rmlib command needs a file path!");
+                return;
+            }
+
+            deleteLib(obj.returnVal);
+            break;
         case 'curlInfo':
             if (items.length < 2) {
                 throwError("CurlInfor command needs value.");
@@ -1128,7 +1145,5 @@ init();
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
 //
 // FileReader doesn't work multiple times!
-//
-// Be able to delete libraries ('rmlib' command) 
 //
 /////////////////////////////////////////////////////////////////////////////////////////
