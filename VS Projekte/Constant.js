@@ -3,6 +3,7 @@ const operator = 'operator';             // pale green
 const keyword = 'keyword';               // dark pink
 const metacode = 'metacode';             // dark purple
 const vartype = 'type';                  // dark blue
+const _typeof = 'typeof';                // light green
 const identifier = 'identifier';         // light blue
 const functionCall = 'functionCall';     // yellow
 const byteexpr = 'byteexpr';             // grayish color
@@ -79,8 +80,19 @@ const types = [
     'dbl',
     'bol',
     'typ',
-    'void'
+    'void',
+    'lst'
 ];
+const typeofTypes = [
+    'BYT',
+    'INT',
+    'FLT',
+    'STR',
+    'DBL',
+    'CHR',
+    'TYP',
+    'LST'
+]
 
 // Operations
 const PLUS = '+';
@@ -156,8 +168,8 @@ const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const digits = '0123456789';
 export const letters_digits = letters + digits;
 
-const server = "http://192.168.178.58:8008";
-const origin = "http://192.168.178.125:3000";
+const server = "http://100.115.92.196:8000";
+const origin = "http://100.115.92.196:3000";
 
 // If the shift or alt key is pressed specific characters will output special characters.
 const shiftChars = {
@@ -312,6 +324,8 @@ export const c = {
     keyword: keyword,
     metacode: metacode,
     vartype: vartype,
+    _typeof: _typeof,
+    typeofTypes : typeofTypes,
     identifier: identifier,
     byteexpr: byteexpr,
     functionCall: functionCall,

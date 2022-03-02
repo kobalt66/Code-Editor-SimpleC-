@@ -2,8 +2,8 @@ from subprocess import call, run, PIPE
 from os import path, mkdir, listdir
 from json import loads
 
-CMDOPTIONS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/cmdoptions.txt'
-PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
+CMDOPTIONS = './cmdoptions.txt'
+PROJECTS = './Projects'
 
 def RUN():
     # Process data

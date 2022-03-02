@@ -4,8 +4,8 @@ from sys import argv
 from PostRequests import SAVESCRIPT, COMPILE, UPLOADLIB, SETCMDOPTIONS, SUBMITFILE, DELETEFILE, DELETELIB
 from GetRequests import RUN, LOADPROJECTS, GETCODE, GETCMDOPTIONS
 
-BIND_HOST = '192.168.178.58'
-PORT = 8008
+BIND_HOST = '100.115.92.196'
+PORT = 8000
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):

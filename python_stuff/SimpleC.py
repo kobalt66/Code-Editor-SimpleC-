@@ -200,9 +200,9 @@ DIGITS = '0123456789'
 LETGITS = LETTERS + DIGITS
 FLOATMIN = 0.0000000000000001
 
-PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
+PROJECTS = './Projects'
 outputdir = ""
-librarydir = "/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Libraries"
+librarydir = "./Libraries"
 fileType = ".sc"
 usedLibs = []
 
@@ -3040,7 +3040,7 @@ class Parser:
                 return res
 
             elements.append(element)
-            listType = element.type.value if isinstance(element, Variable) else listType
+            listType = element.type
             listType = element.name if isinstance(element, ArgAccess) else listType
             
             if self.currTok.type == COMMA:
