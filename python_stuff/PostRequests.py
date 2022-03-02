@@ -2,9 +2,9 @@ from json import loads, dumps
 from os import path, mkdir, rmdir, listdir, remove
 from SimpleC import runScript, run
 
-CMDOPTIONS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/cmdoptions.txt'
-PROJECTS = '/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Projects'
-LIBRARIES = "/home/pi/Desktop/SimpleC/Code-Editor-SimpleC-/python_stuff/Libraries"
+CMDOPTIONS = './cmdoptions.txt'
+PROJECTS = './Projects'
+LIBRARIES = "./Libraries"
 
 def SAVESCRIPT(content):
     # Process data

@@ -186,6 +186,10 @@ async function clickScript(project, script) {
         updateCursor(0, false);
         lexing(final_code);
 
+        // Fix some stuff
+        var code = document.getElementById("output");
+        code.innerHTML = code.innerText;
+
         // Display lines
         var str = '';
         for (let i = 1; i < lineData.length + 1; i++)
@@ -358,6 +362,9 @@ function highlight_code(tokens) {
             case c.byteexpr:
                 output += '#81948e; text-shadow: 0 0 5px #81948e;">';
                 break;
+            case c._typeof:
+                output += '#8be05a; text-shadow: 0 0 5px #8be05a;">';
+                break;
         }
 
         output += token.value;
@@ -413,6 +420,7 @@ function lexing(code) {
         type = c.keywords.includes(str) ? c.keyword : c.identifier;
         type = c.metaKeywords.includes(str) ? c.metacode : type;
         type = c.types.includes(str) ? c.vartype : type;
+        type = c.typeofTypes.includes(str) ? c._typeof : type;
         type = Number.isInteger(Number.parseInt(str)) ? c.number : type;
 
         // Special cases
@@ -1004,8 +1012,8 @@ function init() {
             case 'ShiftRight':
             case 'ShiftLeft':
                 var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
-                keycode = e.code.includes('Control') ? 'Control' : e.code;
-                cPos[keycode] = true;
+                keycode = e.code.includes('Control') ? 'Control' : keycode;
+                cPos[keycode] = true
                 break;
             case 'Enter':
                 addCharTocode('\n', cPos.idx);
@@ -1136,7 +1144,7 @@ function init() {
             case 'ControlLeft':
             case 'ControlRight':
                 var keycode = e.code.includes('Right') ? e.code.replace('Right', 'Left') : e.code;
-                keycode = e.code.includes('Control') ? 'Control' : e.code;
+                keycode = e.code.includes('Control') ? 'Control' : keycode;
                 cPos[keycode] = false;
                 break;
         }
@@ -1152,5 +1160,7 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
+//
+// Font issue when loading a new script
 //
 /////////////////////////////////////////////////////////////////////////////////////////
