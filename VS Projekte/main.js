@@ -186,10 +186,6 @@ async function clickScript(project, script) {
         updateCursor(0, false);
         lexing(final_code);
 
-        // Fix some stuff
-        var code = document.getElementById("output");
-        code.innerHTML = code.innerText;
-
         // Display lines
         var str = '';
         for (let i = 1; i < lineData.length + 1; i++)
@@ -1160,7 +1156,5 @@ init();
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Bei mehrzeiligen Strings bzw. Kommentarblöcken werden die Zeilen nicht erkannt.
-//
-// Font issue when loading a new script
 //
 /////////////////////////////////////////////////////////////////////////////////////////
