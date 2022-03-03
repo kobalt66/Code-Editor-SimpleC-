@@ -80,6 +80,7 @@ ul {
 }
 .code_editor {
     width: 95%;
+    font-family: 'Overpass Mono', monospace;
     background-color: #2b2b2b;
 }
 
